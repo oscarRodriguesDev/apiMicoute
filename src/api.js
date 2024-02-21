@@ -19,7 +19,7 @@ app.post("/user/fitcultural", async (req, res) => {
 //a requisição deve enviar os arrays, o id e o usuario que seão tratados abaixo
   try {
     var id = "141sdgaer5gsdfe4154dsed44ul11aaw15g5ru1";
-    var user = "userTeste";
+    var user = "Oscar";
     var inovacao = calcularNota([5,4,6,1,3,5], 2.08);
     var autonomia = calcularNota([7,5,4,9,1], 2.5);
     var competicao = calcularNota([5,4,4,9], 3.12);
@@ -28,6 +28,18 @@ app.post("/user/fitcultural", async (req, res) => {
     var ordem = calcularNota([4,5,3,7], 3.12);
     var acolhimento = calcularNota([1,3,5,7,9,2], 2.08);
     var proposito = calcularNota([7,9,5,1], 3.12);
+    
+    //calculo percentual
+    var total = inovacao +autonomia+competicao+meritocracia+estabilidade+ordem+acolhimento+proposito
+    Number(inovacao = ((inovacao/total)*100).toFixed(2))
+    Number(autonomia = ((autonomia/total)*100).toFixed(2))
+    Number(competicao = ((competicao/total)*100).toFixed(2))
+    Number(meritocracia = ((meritocracia/total)*100).toFixed(2))
+    Number(estabilidade = ((estabilidade/total)*100).toFixed(2))
+    Number(ordem = ((ordem/total)*100).toFixed(2))
+    Number(acolhimento = ((acolhimento/total)*100).toFixed(2))
+    Number(proposito = ((proposito/total)*100).toFixed(2))
+    
     const data = { user,inovacao,autonomia,competicao,meritocracia,estabilidade,ordem,acolhimento,proposito,};
     //respostas do fit cultural
 const fitCultural = {
@@ -48,7 +60,7 @@ const usuarioRef = await admin.firestore().collection('Fit Cultural Usuarios').a
  fitCultural
 });
     res.json({
-      message: `Dados salvos com sucesso no id ${fitCultural.dados.user}`,
+      message: `Fit cultural de ${fitCultural.dados.user} salvo com sucesso na base de dados`,
     
     });
   } catch (error) {
@@ -66,7 +78,7 @@ const usuarioRef = await admin.firestore().collection('Fit Cultural Usuarios').a
 app.post("/companies/fitcultural", async (req, res) => {
   try {
     var id = "141sdgaer5gsdfe4154dsed44ul11aaw15g5ru1";
-    var user = "userTeste";
+    var empresa = "Pelicano";
     var inovacao = calcularNota([2,4,4,2,1,6], 2.08);
     var autonomia = calcularNota([2,5,5,7,6], 2.5);
     var competicao = calcularNota([5,1,3,9], 3.12);
@@ -75,12 +87,25 @@ app.post("/companies/fitcultural", async (req, res) => {
     var ordem = calcularNota([5,2,1,8], 3.12);
     var acolhimento = calcularNota([5,5,7,9,1,2], 2.08);
     var proposito = calcularNota([6,4,2,3], 3.12);
-    const data = { user,inovacao,autonomia,competicao,meritocracia,estabilidade,ordem,acolhimento,proposito,};
 
+      //calculo percentual
+      var total = inovacao +autonomia+competicao+meritocracia+estabilidade+ordem+acolhimento+proposito
+      Number(inovacao = ((inovacao/total)*100).toFixed(2))
+      Number(autonomia = ((autonomia/total)*100).toFixed(2))
+      Number(competicao = ((competicao/total)*100).toFixed(2))
+      Number(meritocracia = ((meritocracia/total)*100).toFixed(2))
+      Number(estabilidade = ((estabilidade/total)*100).toFixed(2))
+      Number(ordem = ((ordem/total)*100).toFixed(2))
+      Number(acolhimento = ((acolhimento/total)*100).toFixed(2))
+      Number(proposito = ((proposito/total)*100).toFixed(2))
+
+
+    const data = { empresa,inovacao,autonomia,competicao,meritocracia,estabilidade,ordem,acolhimento,proposito,};
+   
      //respostas do fit cultural
 const fitCultural = {
   dados: {
-    user: data.user,},
+    empresa: data.empresa,},
   resposta: {
     inovacao: data.inovacao,
     autonomia: data.autonomia,
@@ -99,7 +124,7 @@ const usuarioRef = await admin.firestore().collection('Fit Cultural Empresas').a
  });
 
 res.json({
-  message:'FitCultural registrado com sucesso!'
+  message:`Fit Cultural da Empresa ${fitCultural.dados.empresa} salvo com sucesso na base de dados`
 })
 
 
