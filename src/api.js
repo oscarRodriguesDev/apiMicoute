@@ -3,7 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const app = express();
 const port = 3001;
-var serviceAccount = require("./services/crendential.json");
+var serviceAccount = require("./services/credential.json");
 var admin = require("firebase-admin");
 
 app.use(cors());
