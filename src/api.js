@@ -15,10 +15,10 @@ admin.initializeApp({
 
 //salva o fit cultural do usuario informado no corpo da requisição
 app.post("/user/fitcultural", async (req, res) => {
-  /*   const {inovação,autonomia,competicao,meritocracia,estabilidade,ordem,acolhimento,proposito} = req.body; */
+  /*   const {user,inovação,autonomia,competicao,meritocracia,estabilidade,ordem,acolhimento,proposito} = req.body; */
 //a requisição deve enviar os arrays, o id e o usuario que seão tratados abaixo
   try {
-    var id = "141sdgaer5gsdfe4154dsed44ul11aaw15g5ru1";
+   
     var user = "Oscar";
     var inovacao = calcularNota([5,4,6,1,3,5], 2.08);
     var autonomia = calcularNota([7,5,4,9,1], 2.5);
@@ -69,9 +69,6 @@ const usuarioRef = await admin.firestore().collection('Fit Cultural Usuarios').a
     });
   }
 });
-
-
-
 
 
 //salva o fit cultural da empresa informado no corpo da requisição
@@ -139,31 +136,55 @@ res.json({
 
 
 
-
-
-
-
-
 //apenas uma verificação de que a api esta funcionando
 app.get("/verification", (req, res) => {
   res.json({ message: "Api no ar" });
 });
 
+
+
 //retorna todos os fitcultural de usuario
-app.get("/fitcultalusers", (req, res) => {
-  res.json({ message: "fit cultural de todos os usuarios" });
-});
+app.get("/fitcultalusers", async (req, res) => {
+  try{
+    const snapshot = await admin.firestore().collection('Fit Cultural Usuarios').get() ;
+    let fitUsers = [];
+    snapshot.forEach((doc)=> {
+      fitUsers.push(doc.data())
+      })
+      return res.status(200).send(fitUsers);
+      }catch(err){
+        console.log(err);
+        return res.status(400).send({erro:'Values not Found', error:err});
+        }
+        }
+
+);
+
+
+
 
 //retorna todos os fit cultural das empresas
-app.get("/fitcultalcompanies", (req, res) => {
-  res.json({ message: "fit cultural de todas as empresas" });
-});
+app.get("/fitcultalcompanies", async (req, res) => {
+  try{
+    const snapshot = await admin.firestore().collection('Fit Cultural Empresas').get() ;
+    let fitEmpresas = [];
+    snapshot.forEach((doc)=> {
+      fitEmpresas.push(doc.data())
+      })
+      return res.status(200).send(fitEmpresas);
+      }catch(err){
+        console.log(err);
+        return res.status(400).send({erro:'Values not Found', error:err});
+        }
+        });
+
+
 
 //retorna o resultado do fit cultural do usuario infomado na url da requisição
 app.get("/result/user:id", (req, res) => {
-  const { username } = req.params;
+  const { id } = req.params;
   res.json({
-    message: `quando estiver pronto vai retornar o fit cultural do usuario ${username}`,
+    message: `quando estiver pronto vai retornar o fit cultural do usuario ${id}`,
   });
 });
 
@@ -193,7 +214,16 @@ app.put("/companies/editresult:id", (req, res) => {
     message: `Quando estiver funcionando vai alterar o teste salvo no banco de dados`,
     data: body,
   });
-});
+});  asdf
+asdfasdf
+asdfasdfasdf
+asdfasdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
 
 //deletar resultado do fit cultural do usuario
 app.delete("/del/resultado/user/:id", (req, res) => {
