@@ -7,9 +7,9 @@ http://localhost:3001/fitcultalusers
 
 http://localhost:3001/fitcultalcompanies
 
-http://localhost:3001/result/user:123
+http://localhost:3001/result/user/:123
 
-http://localhost:3001/result/companies:456
+http://localhost:3001/result/companies:/456
 
 _____________________________________________________
 

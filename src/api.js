@@ -14,92 +14,24 @@ admin.initializeApp({
 });
 
 
+/*
+  *a verificação de que a api esta em pleno funcionamento
+ */
+//apenas uma verificação de que a api esta funcionando
+app.get("/verification", (req, res) => {
+  res.json({ message: "Api no ar" });
+});
 
-//salva o fit cultural do usuario informado no corpo da requisição
-app.post("/user/fitcultural", async (req, res) => {
-  /*   const {user,inovação,autonomia,competicao,meritocracia,estabilidade,ordem,acolhimento,proposito} = req.body; */
-  //a requisição deve enviar os arrays, o id e o usuario que seão tratados abaixo
-  try {
-    var id = await definitionID('id-usuario')
-    var user = "Cassio";
-    var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
-    var autonomia = calcularNota([7, 5, 4, 9, 1], 2.5);
-    var competicao = calcularNota([5, 4, 4, 9], 3.12);
-    var meritocracia = calcularNota([1, 4, 2, 9], 3.12);
-    var estabilidade = calcularNota([1, 3, 8, 10], 3.12);
-    var ordem = calcularNota([4, 5, 3, 7], 3.12);
-    var acolhimento = calcularNota([1, 3, 5, 7, 9, 2], 2.08);
-    var proposito = calcularNota([7, 9, 5, 1], 3.12);
-
-    //calculo percentual
-    var total =
-      inovacao +
-      autonomia +
-      competicao +
-      meritocracia +
-      estabilidade +
-      ordem +
-      acolhimento +
-      proposito;
-    Number((inovacao = ((inovacao / total) * 100).toFixed(2)));
-    Number((autonomia = ((autonomia / total) * 100).toFixed(2)));
-    Number((competicao = ((competicao / total) * 100).toFixed(2)));
-    Number((meritocracia = ((meritocracia / total) * 100).toFixed(2)));
-    Number((estabilidade = ((estabilidade / total) * 100).toFixed(2)));
-    Number((ordem = ((ordem / total) * 100).toFixed(2)));
-    Number((acolhimento = ((acolhimento / total) * 100).toFixed(2)));
-    Number((proposito = ((proposito / total) * 100).toFixed(2)));
-
-    const data = {
-      id,
-      user,
-      inovacao,
-      autonomia,
-      competicao,
-      meritocracia,
-      estabilidade,
-      ordem,
-      acolhimento,
-      proposito,
-    };
-    //respostas do fit cultural
-    const fitCultural = {
-      dados: {
-        id:data.id,
-        user: data.user,
-      },
-      resposta: {
-        inovacao: data.inovacao,
-        autonomia: data.autonomia,
-        competição: data.competicao,
-        meritocracia: data.meritocracia,
-        estabilidade: data.estabilidade,
-        ordem: data.ordem,
-        acolhimento: data.acolhimento,
-        proposito: data.proposito,
-      },
-    };
-  
-    const usuarioRef = await admin
-      .firestore()
-      .collection("Fit Cultural Usuarios")
-      .add({
-        fitCultural,
-      });
-    res.json({
-      message: `Fit cultural de ${fitCultural.dados.user} salvo com sucesso na base de dados`,
-    });
-  } catch (error) {
-    res.json({
-      message: error | `err 400 NOT FOUND`,
-    });
-  }
+//apenas verificação de que api esta rodando
+app.get("/", (req, res) => {
+  res.json({ message: "Api no ar" });
 });
 
 
 
-
-
+/**Abaixo temos todas os meios de salvar o fit cultural do usuario e empresa que é apenas um dos testes
+ * comportamentais que devem ser feit
+ */
 
 //salva o fit cultural da empresa informado no corpo da requisição
 app.post("/companies/fitcultural", async (req, res) => {
@@ -185,14 +117,86 @@ app.post("/companies/fitcultural", async (req, res) => {
 
 
 
+//salva o fit cultural do usuario informado no corpo da requisição
+app.post("/user/fitcultural", async (req, res) => {
+  /*   const {user,inovação,autonomia,competicao,meritocracia,estabilidade,ordem,acolhimento,proposito} = req.body; */
+  //a requisição deve enviar os arrays, o id e o usuario que seão tratados abaixo
+  try {
+    var id = await definitionID('id-usuario')
+    var user = "Cassio";
+    var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
+    var autonomia = calcularNota([7, 5, 4, 9, 1], 2.5);
+    var competicao = calcularNota([5, 4, 4, 9], 3.12);
+    var meritocracia = calcularNota([1, 4, 2, 9], 3.12);
+    var estabilidade = calcularNota([1, 3, 8, 10], 3.12);
+    var ordem = calcularNota([4, 5, 3, 7], 3.12);
+    var acolhimento = calcularNota([1, 3, 5, 7, 9, 2], 2.08);
+    var proposito = calcularNota([7, 9, 5, 1], 3.12);
 
+    //calculo percentual
+    var total =
+      inovacao +
+      autonomia +
+      competicao +
+      meritocracia +
+      estabilidade +
+      ordem +
+      acolhimento +
+      proposito;
+    Number((inovacao = ((inovacao / total) * 100).toFixed(2)));
+    Number((autonomia = ((autonomia / total) * 100).toFixed(2)));
+    Number((competicao = ((competicao / total) * 100).toFixed(2)));
+    Number((meritocracia = ((meritocracia / total) * 100).toFixed(2)));
+    Number((estabilidade = ((estabilidade / total) * 100).toFixed(2)));
+    Number((ordem = ((ordem / total) * 100).toFixed(2)));
+    Number((acolhimento = ((acolhimento / total) * 100).toFixed(2)));
+    Number((proposito = ((proposito / total) * 100).toFixed(2)));
 
-
-//apenas uma verificação de que a api esta funcionando
-app.get("/verification", (req, res) => {
-  res.json({ message: "Api no ar" });
+    const data = {
+      id,
+      user,
+      inovacao,
+      autonomia,
+      competicao,
+      meritocracia,
+      estabilidade,
+      ordem,
+      acolhimento,
+      proposito,
+    };
+    //respostas do fit cultural
+    const fitCultural = {
+      dados: {
+        id:data.id,
+        user: data.user,
+      },
+      resposta: {
+        inovacao: data.inovacao,
+        autonomia: data.autonomia,
+        competição: data.competicao,
+        meritocracia: data.meritocracia,
+        estabilidade: data.estabilidade,
+        ordem: data.ordem,
+        acolhimento: data.acolhimento,
+        proposito: data.proposito,
+      },
+    };
+  
+    const usuarioRef = await admin
+      .firestore()
+      .collection("Fit Cultural Usuarios")
+      .add({
+        fitCultural,
+      });
+    res.json({
+      message: `Fit cultural de ${fitCultural.dados.user} salvo com sucesso na base de dados`,
+    });
+  } catch (error) {
+    res.json({
+      message: error | `err 400 NOT FOUND`,
+    });
+  }
 });
-
 
 
 //retorna todos os fitcultural de usuario
@@ -231,21 +235,77 @@ app.get("/fitcultalcompanies", async (req, res) => {
   }
 });
 
+
+
+
+
 //retorna o resultado do fit cultural do usuario infomado na url da requisição
-app.get("/result/user:id", (req, res) => {
-  const { id } = req.params;
-  res.json({
-    message: `quando estiver pronto vai retornar o fit cultural do usuario ${id}`,
-  });
+app.get("/result/user/:id", async (req, res) => {
+  var { id } = req.params;
+  id = id.slice(1)
+  try {
+    const snapshot = await admin
+      .firestore()
+      .collection("Fit Cultural Usuarios")
+      .get();
+    let usuario = null; // Inicializamos como null, para verificar se encontramos um usuário
+    snapshot.forEach((doc) => {
+      if (doc.data().fitCultural.dados.id == id) {
+        usuario =  doc.data();
+      }
+    });
+
+    if (usuario !== null) {
+      // Se encontramos um usuário, enviamos a resposta com os dados do usuário
+      return res.send(usuario);
+    } else {
+      // Se não encontramos um usuário, enviamos a resposta indicando que não foi encontrado
+      return res.status(404).send('Usuário não encontrado!');
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ erro: "Erro ao buscar os valores", error: err });
+  }
 });
 
+
+
+
+
+
 //retorna o resultado do fit cultural da empresa infomado na url da requisição
-app.get("/result/companies:id", (req, res) => {
-  const { username } = req.params;
-  res.json({
-    message: `quando estiver pronto vai retornar o fit cultural do usuario ${username}`,
-  });
+app.get("/result/companies/:id", async (req, res) => {
+  var { id } = req.params;
+  id = id.slice(1)
+  try {
+    const snapshot = await admin
+      .firestore()
+      .collection("Fit Cultural Empresas")
+      .get();
+    let empresa = null; // Inicializamos como null, para verificar se encontramos um usuário
+    snapshot.forEach((doc) => {
+      if (doc.data().fitCultural.dados.id == id) {
+        empresa =  doc.data();
+      }
+    });
+
+    if (empresa !== null) {
+      // Se encontramos um usuário, enviamos a resposta com os dados do usuário
+      return res.send(empresa);
+    } else {
+      // Se não encontramos um usuário, enviamos a resposta indicando que não foi encontrado
+      return res.status(404).send('Usuário não encontrado!');
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ erro: "Erro ao buscar os valores", error: err });
+  }
 });
+
+
+
+
+
 
 //altera o valor do teste do usuario utilizando o id para identificá-lo
 app.put("/user/editresult:id", (req, res) => {
