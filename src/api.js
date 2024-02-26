@@ -17,23 +17,27 @@ admin.initializeApp({
 /*
   *a verificação de que a api esta em pleno funcionamento
  */
-//apenas uma verificação de que a api esta funcionando
+
 app.get("/verification", (req, res) => {
   res.json({ message: "Api no ar" });
 });
 
-//apenas verificação de que api esta rodando
+
+
+/*
+  *a verificação de que a api esta em pleno funcionamento
+ */
+
 app.get("/", (req, res) => {
   res.json({ message: "Api no ar" });
 });
 
 
 
-/**Abaixo temos todas os meios de salvar o fit cultural do usuario e empresa que é apenas um dos testes
+/*
+*Abaixo temos todas os meios de salvar o fit cultural do usuario e empresa que é apenas um dos testes
  * comportamentais que devem ser feit
  */
-
-//salva o fit cultural da empresa informado no corpo da requisição
 app.post("/companies/fitcultural", async (req, res) => {
   try {
     var id = await definitionID('id-empresas');
@@ -114,6 +118,107 @@ app.post("/companies/fitcultural", async (req, res) => {
     });
   }
 });
+
+
+/* retorna todos os fit cultural dos usuários */
+app.get("/fitcultalusers", async (req, res) => {
+  try {
+    const snapshot = await admin
+      .firestore()
+      .collection("Fit Cultural Usuarios")
+      .get();
+    let fitUsers = [];
+    snapshot.forEach((doc) => {
+      fitUsers.push(doc.data());
+    });
+    return res.status(200).send(fitUsers);
+  } catch (err) {
+    console.log(err);
+    return res.status(400).send({ erro: "Values not Found", error: err });
+  }
+});
+
+
+/* Retorna o fit culturual de todas as empresas */
+app.get("/fitcultalcompanies", async (req, res) => {
+  try {
+    const snapshot = await admin
+      .firestore()
+      .collection("Fit Cultural Empresas")
+      .get();
+    let fitEmpresas = [];
+    snapshot.forEach((doc) => {
+      fitEmpresas.push(doc.data());
+    });
+    return res.status(200).send(fitEmpresas);
+  } catch (err) {
+    console.log(err);
+    return res.status(400).send({ erro: "Values not Found", error: err });
+  }
+});
+
+
+
+
+/* Retorna o fit cultural do usuario informado no id */
+app.get("/result/user/:id", async (req, res) => {
+  var { id } = req.params;
+  id = id.slice(1)
+  try {
+    const snapshot = await admin
+      .firestore()
+      .collection("Fit Cultural Usuarios")
+      .get();
+    let usuario = null; // Inicializamos como null, para verificar se encontramos um usuário
+    snapshot.forEach((doc) => {
+      if (doc.data().fitCultural.dados.id == id) {
+        usuario =  doc.data();
+      }
+    });
+
+    if (usuario !== null) {
+      // Se encontramos um usuário, enviamos a resposta com os dados do usuário
+      return res.send(usuario);
+    } else {
+      // Se não encontramos um usuário, enviamos a resposta indicando que não foi encontrado
+      return res.status(404).send('Usuário não encontrado!');
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ erro: "Erro ao buscar os valores", error: err });
+  }
+});
+
+
+/* Retorna o fit cultural da empresa pelo id */
+app.get("/result/companies/:id", async (req, res) => {
+  var { id } = req.params;
+  id = id.slice(1)
+  try {
+    const snapshot = await admin
+      .firestore()
+      .collection("Fit Cultural Empresas")
+      .get();
+    let empresa = null; // Inicializamos como null, para verificar se encontramos um usuário
+    snapshot.forEach((doc) => {
+      if (doc.data().fitCultural.dados.id == id) {
+        empresa =  doc.data();
+      }
+    });
+
+    if (empresa !== null) {
+      // Se encontramos um usuário, enviamos a resposta com os dados do usuário
+      return res.send(empresa);
+    } else {
+      // Se não encontramos um usuário, enviamos a resposta indicando que não foi encontrado
+      return res.status(404).send('Usuário não encontrado!');
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ erro: "Erro ao buscar os valores", error: err });
+  }
+});
+
 
 
 
@@ -199,123 +304,47 @@ app.post("/user/fitcultural", async (req, res) => {
 });
 
 
-//retorna todos os fitcultural de usuario
-app.get("/fitcultalusers", async (req, res) => {
-  try {
-    const snapshot = await admin
-      .firestore()
-      .collection("Fit Cultural Usuarios")
-      .get();
-    let fitUsers = [];
-    snapshot.forEach((doc) => {
-      fitUsers.push(doc.data());
-    });
-    return res.status(200).send(fitUsers);
-  } catch (err) {
-    console.log(err);
-    return res.status(400).send({ erro: "Values not Found", error: err });
-  }
-});
-
-//retorna todos os fit cultural das empresas
-app.get("/fitcultalcompanies", async (req, res) => {
-  try {
-    const snapshot = await admin
-      .firestore()
-      .collection("Fit Cultural Empresas")
-      .get();
-    let fitEmpresas = [];
-    snapshot.forEach((doc) => {
-      fitEmpresas.push(doc.data());
-    });
-    return res.status(200).send(fitEmpresas);
-  } catch (err) {
-    console.log(err);
-    return res.status(400).send({ erro: "Values not Found", error: err });
-  }
-});
-
-
-
-
-
-//retorna o resultado do fit cultural do usuario infomado na url da requisição
-app.get("/result/user/:id", async (req, res) => {
-  var { id } = req.params;
-  id = id.slice(1)
-  try {
-    const snapshot = await admin
-      .firestore()
-      .collection("Fit Cultural Usuarios")
-      .get();
-    let usuario = null; // Inicializamos como null, para verificar se encontramos um usuário
-    snapshot.forEach((doc) => {
-      if (doc.data().fitCultural.dados.id == id) {
-        usuario =  doc.data();
-      }
-    });
-
-    if (usuario !== null) {
-      // Se encontramos um usuário, enviamos a resposta com os dados do usuário
-      return res.send(usuario);
-    } else {
-      // Se não encontramos um usuário, enviamos a resposta indicando que não foi encontrado
-      return res.status(404).send('Usuário não encontrado!');
-    }
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send({ erro: "Erro ao buscar os valores", error: err });
-  }
-});
-
-
-
-
-
-
-//retorna o resultado do fit cultural da empresa infomado na url da requisição
-app.get("/result/companies/:id", async (req, res) => {
-  var { id } = req.params;
-  id = id.slice(1)
-  try {
-    const snapshot = await admin
-      .firestore()
-      .collection("Fit Cultural Empresas")
-      .get();
-    let empresa = null; // Inicializamos como null, para verificar se encontramos um usuário
-    snapshot.forEach((doc) => {
-      if (doc.data().fitCultural.dados.id == id) {
-        empresa =  doc.data();
-      }
-    });
-
-    if (empresa !== null) {
-      // Se encontramos um usuário, enviamos a resposta com os dados do usuário
-      return res.send(empresa);
-    } else {
-      // Se não encontramos um usuário, enviamos a resposta indicando que não foi encontrado
-      return res.status(404).send('Usuário não encontrado!');
-    }
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send({ erro: "Erro ao buscar os valores", error: err });
-  }
-});
-
-
 
 
 
 
 //altera o valor do teste do usuario utilizando o id para identificá-lo
-app.put("/user/editresult:id", (req, res) => {
+app.put("/result/user/:id", async (req, res) => {
   const { id } = req.params;
-  const { body } = req;
-  res.json({
-    message: `Quando estiver funcionando vai alterar o teste salvo no banco de dados`,
-    data: body,
-  });
+  const { user, inovacao, autonomia, competicao, meritocracia, estabilidade, ordem, acolhimento, proposito } = '';
+  
+
+  try {
+    // Verificar se o usuário existe
+    const userRef = admin.firestore().collection("Fit Cultural Usuarios").doc(id);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({ message: "Usuário não encontrado." });
+    }
+
+    // Atualizar os dados do usuário
+    await userRef.update({
+      "fitCultural.dados.user": user,
+      "fitCultural.resposta.inovacao": inovacao,
+      "fitCultural.resposta.autonomia": autonomia,
+      "fitCultural.resposta.competição": competicao,
+      "fitCultural.resposta.meritocracia": meritocracia,
+      "fitCultural.resposta.estabilidade": estabilidade,
+      "fitCultural.resposta.ordem": ordem,
+      "fitCultural.resposta.acolhimento": acolhimento,
+      "fitCultural.resposta.proposito": proposito
+    });
+
+    return res.status(200).json({ message: "Dados do usuário atualizados com sucesso." });
+  } catch (error) {
+    console.error("Erro ao atualizar dados do usuário:", error);
+    return res.status(500).json({ message: "Erro ao atualizar dados do usuário." });
+  }
 });
+
+
+
 
 //altera o valor do teste da empresa  utilizando o id para identificá-la
 app.put("/companies/editresult:id", (req, res) => {
@@ -327,17 +356,27 @@ app.put("/companies/editresult:id", (req, res) => {
   });
 });
 
+
+
+
+
 //deletar resultado do fit cultural do usuario
 app.delete("/del/resultado/user/:id", (req, res) => {
   const { id } = req.params;
   res.json({ message: `vai deletar o usuario no banco` });
 });
 
+
+
+
 //deletar resultado do fit cultural da empresa
 app.delete("/del/resultado/companies/:id", (req, res) => {
   const { id } = req.params;
   res.json({ message: `vai deletar a empresa no banco` });
 });
+
+
+
 
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
