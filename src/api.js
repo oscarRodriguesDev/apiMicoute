@@ -302,31 +302,29 @@ app.post("/companies/fitcultural", async (req, res) => {
 //alterar o nome de usuaio
 
   app.put("/user/edit-user/:id", async (req, res) => {
-    try {
-      var { id } = req.params;
-        id=id.slice(1)
-      var { novoNome } = '';
-        novoNome ='Cassio Jordan'
-      // Verificar se o ID fornecido é válido
-      if (!id) {
-        return res.status(400).json({ message: "ID do usuário não fornecido" });
+    
+      var userId = req.params.id; 
+      userId =  userId.slice(1)// Obter o ID do usuário da URL
+    
+      
+      try {
+        const userRef = admin.firestore().collection("Fit Cultural Usuarios").data()
+        const userDoc = await userRef.get();
+     
+      /*   if (!userDoc.exists) {
+          return res.status(404).json({ message: "Usuário não encontrado" });
+        }
+    
+        // Atualize os dados do usuário no Firestore
+        await userRef.update(); */
+    
+        res.json({ message: userDoc });
+      } catch (error) {
+        res.status(500).json({ message: `Erro ao atualizar o usuário: ${error}` });
       }
-  
-      // Verificar se o novo nome foi fornecido
-      if (!novoNome) {
-        return res.status(400).json({ message: "Novo nome do usuário não fornecido" });
-      }
-  
-      // Atualizar o nome do usuário no banco de dados
-      await admin.firestore().collection("Fit Cultural Usuarios").doc(id).update({
-        "fitCultural.dados.user": novoNome
-      });
-  
-      res.json({ message: `Nome do usuário atualizado com sucesso para ${novoNome}` });
-    } catch (error) {
-      res.status(500).json({ message: `Erro ao atualizar o nome do usuário: ${error.message}` });
-    }
-  });
+    });
+    
+
   
      
 
