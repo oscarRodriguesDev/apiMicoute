@@ -1,38 +1,46 @@
+Rotas post
+criar um usuario pessoa fisica
+http://localhost:3001/rh/perfil/usuario/fitcultural
 
-get
+criar uma empresa
+http://localhost:3001/rh/perfil/empresa/fitcultural
 
-http://localhost:3001/verification - verificação de disponibilidade 
+as rotas acima alem de gerar o fit cultural do usuario e da empresa, vai ser o responsavel por inserir novos dados no 
+banco de dados, tanto empresa como pessoa fisica, em outras palavras o fit cultural vai ser onde efetivamente o usuario vai ser 
+inserido no banco de testes de perfil
 
-http://localhost:3001/fitcultalusers
 
-http://localhost:3001/fitcultalcompanies
+rota get para recuperar todos os usuarios pessoas fisica
 
-http://localhost:3001/result/user/:123
+http://localhost:3001/rh/perfil/usuarios/
 
-http://localhost:3001/result/companies:/456
+rota get para recuperar todos os usuarios empresa
 
-_____________________________________________________
+http://localhost:3001/rh/perfil/empresa/
 
-post
 
-http://localhost:3001/user/fitcultural
 
-http://localhost:3001/companies/fitcultural
 
-_____________________________________________________
+rota get para recuperar todos os usuarios pessoas fisica pelo id
 
-put
+http://localhost:3001/rh/perfil/usuarios/:id
 
-http://localhost:3001/user/editresult:123
+rota get para recuperar todos os usuarios empresa pelo id
 
-http://localhost:3001/companies/editresult:id
+http://localhost:3001/rh/perfil/empresa/:id
 
-_________________________________________________________
 
-delete
+rotas put ou rotas de edição, para empresa e usuarios
 
-http://localhost:3001/del/resultado/user/:123
+rota para alterar nome de usuario:
+http://localhost:3001/rh/perfil/usuario/edit-usuario/:id
 
-http://localhost:3001/del/resultado/companies/:456
+rota para alterar nome de empresa
+http://localhost:3001/rh/perfil/usuario/edit-empresa/:id
 
+rota para alterar fit cultural do usuario
+http://localhost:3001/rh/perfil/usuario/edit-fitcult-usuario/:id
+
+rota para alterar fit cultural da empresa
+http://localhost:3001/rh/perfil/usuario/edit-fitcult-empresa/:id
 
