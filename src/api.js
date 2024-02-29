@@ -41,7 +41,7 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
   //a requisição deve enviar os arrays, o id e o usuario que seão tratados abaixo
   try {
     var id = await definitionID("id-usuario");
-    var user = "Douglas";
+    var user = "Usuario 3";
     var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
     var autonomia = calcularNota([7, 5, 4, 9, 1], 2.5);
     var competicao = calcularNota([5, 4, 4, 9], 3.12);
@@ -548,16 +548,51 @@ app.put("/rh/perfil/usuario/edit-fitcult-empresa/:id", async (req, res) => {
 
 
 //deletar resultado do fit cultural do usuario
-app.delete("/del/resultado/user/:id", (req, res) => {
-  const { id } = req.params;
-  res.json({ message: `vai deletar o usuario no banco` });
+app.delete("/rh/perfil/delete-user/:id", async (req, res) => {
+  
+  var { id } = req.params;
+  id = id.slice(1);
+  var novoNome = "disponible";
+  
+  // Verifica se o novo nome foi fornecido
+  if (!novoNome) {
+    console.log({ error: "O novo nome de usuário não foi fornecido." });
+  }
+  
+  const snapshot = await admin
+    .firestore()
+    .collection("Perfil Usuario")
+    .get();
+  
+  if (snapshot.empty) {
+    console.log({ error: "Usuário não encontrado.", id: id });
+    return res.status(404).json({ error:` Usuário  não encontrado. `});
+  }
+  
+  const usuario = snapshot.docs[id]; // Obtém o primeiro documento retornado pela consulta
+  
+  try {
+    await usuario.ref.update({
+      "perfil_do_usuario.dados_do_usuario.user": novoNome,
+      "perfil_do_usuario.fitcultural":{}
+    });
+    console.log("Nome de usuário atualizado com sucesso.");
+    return res.status(200).json({ message: "Nome de usuário atualizado com sucesso." });
+  } catch (error) {
+    console.error("Erro ao atualizar o nome de usuário:", error);
+    return res.status(500).json({ error: "Erro interno do servidor ao atualizar o nome de usuário." });
+  }
+  
 });
 
+
 //deletar resultado do fit cultural da empresa
-app.delete("/del/resultado/companies/:id", (req, res) => {
+app.delete("/rh/perfil/delete-empresa/:id", (req, res) => {
   const { id } = req.params;
   res.json({ message: `vai deletar a empresa no banco` });
 });
+
+
 
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
@@ -601,3 +636,20 @@ async function definitionID(storageID) {
     throw error;
   }
 }
+
+//preciso verificar se dentro do banco tenho algum id disponivel sem usuario e sem fit cultural
+async function verificarLines (){
+  const snapshot = await admin.firestore().collection("Perfil Usuario").get();
+  let usuario = null; // Inicializamos como null, para verificar se encontramos um usuário
+  snapshot.forEach((doc) => {
+    if (doc.data().perfil_do_usuario.dados_do_usuario.id) {
+      usuario = doc.data();
+    }
+  });
+
+  return usuario
+}
+
+app.get('/teste',(req,res)=>{
+res.send(verificarLines())
+})
