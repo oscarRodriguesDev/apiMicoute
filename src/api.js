@@ -40,9 +40,15 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
   /*   const {user,inovação,autonomia,competicao,meritocracia,estabilidade,ordem,acolhimento,proposito} = req.body; */
   //a requisição deve enviar os arrays, o id e o usuario que seão tratados abaixo
   try {
-    var id = await definitionID("id-usuario");
+    
+    var id = await verificarLines()
     console.log({id:id})
-    var user = "Usuario 4";
+    if(id===false){
+      id=definitionID('id-usuario')
+    }else{
+      id = await verificarLines()
+    }
+    var user = "Usuario 5";
     var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
     var autonomia = calcularNota([7, 5, 4, 9, 1], 2.5);
     var competicao = calcularNota([5, 4, 4, 9], 3.12);
@@ -653,24 +659,25 @@ async function verificarLines() {
       .collection("Perfil Usuario")
       .get();
 
-    let userIdx = -1; // Inicializamos como -1 para indicar que não encontramos nenhum usuário
+    let userIdx = false; // Inicializamos como -1 para indicar que não encontramos nenhum usuário
 
-    snapshot.forEach((doc, index) => {
+    for (let index = 1; index < snapshot.docs.length; index++) {
+      const doc = snapshot.docs[index];
       const userData = doc.data().perfil_do_usuario.dados_do_usuario;
       if (userData.user === "disponible") {
         userIdx = index;
-        return; // Interrompe o loop assim que encontrar o usuário disponível
-      }
-    });
+        break; // Interrompe o loop assim que encontrar o usuário disponível
+      }else{
 
-    return userIdx; // Retorna o índice do usuário ou -1 se nenhum for encontrado
+        return false // Retorna o índice do usuário ou -1 se nenhum for encontrado
+      }
+    }
+
   } catch (error) {
     console.error("Erro ao tentar buscar usuário:", error);
     throw error; // Lança o erro para ser tratado no código que chama a função
   }
 }
-
-
 
 
 app.get('/teste', async (req,res)=>{
