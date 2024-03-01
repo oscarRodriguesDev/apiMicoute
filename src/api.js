@@ -41,7 +41,8 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
   //a requisição deve enviar os arrays, o id e o usuario que seão tratados abaixo
   try {
     var id = await definitionID("id-usuario");
-    var user = "Usuario 3";
+    console.log({id:id})
+    var user = "Usuario 4";
     var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
     var autonomia = calcularNota([7, 5, 4, 9, 1], 2.5);
     var competicao = calcularNota([5, 4, 4, 9], 3.12);
@@ -125,7 +126,7 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
   //a requisição deve enviar os arrays, o id e o usuario que seão tratados abaixo
   try {
     var id = await definitionID("id-empresa");
-    var empresa = "Canguru";
+    var empresa = "empresa 3";
     var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
     var autonomia = calcularNota([7, 5, 4, 9, 1], 2.5);
     var competicao = calcularNota([5, 4, 4, 9], 3.12);
@@ -612,6 +613,8 @@ function calcularNota(lista, peso) {
 /*define o id para o usuario*/
 async function definitionID(storageID) {
   try {
+    var status =  await verificarLines()
+    
     const antIDQuery = await admin
       .firestore()
       .collection(storageID)
@@ -624,32 +627,53 @@ async function definitionID(storageID) {
       // Se não houver documentos na coleção, começamos com ID 1
       id = 1;
       await admin.firestore().collection(storageID).doc().set({ id: id });
-    } else {
+    } else if(!antIDQuery.empty&&status!=-1) {
+      id = Number(status)
+      console.log('deverá atualizar usuario vazio no id 2')
+    }else{
       // Se houver um documento, obtemos o último ID, incrementamos e substituímos o documento existente
       const antIDDoc = antIDQuery.docs[0];
       id = antIDDoc.data().id + 1;
       await antIDDoc.ref.set({ id: id });
     }
-    return id;
+    return id-1;
   } catch (error) {
     console.error("Erro:", error);
     throw error;
   }
 }
 
-//preciso verificar se dentro do banco tenho algum id disponivel sem usuario e sem fit cultural
-async function verificarLines (){
-  const snapshot = await admin.firestore().collection("Perfil Usuario").get();
-  let usuario = null; // Inicializamos como null, para verificar se encontramos um usuário
-  snapshot.forEach((doc) => {
-    if (doc.data().perfil_do_usuario.dados_do_usuario.id) {
-      usuario = doc.data();
-    }
-  });
 
-  return usuario
+
+
+async function verificarLines() {
+  try {
+    const snapshot = await admin
+      .firestore()
+      .collection("Perfil Usuario")
+      .get();
+
+    let userIdx = -1; // Inicializamos como -1 para indicar que não encontramos nenhum usuário
+
+    snapshot.forEach((doc, index) => {
+      const userData = doc.data().perfil_do_usuario.dados_do_usuario;
+      if (userData.user === "disponible") {
+        userIdx = index;
+        return; // Interrompe o loop assim que encontrar o usuário disponível
+      }
+    });
+
+    return userIdx; // Retorna o índice do usuário ou -1 se nenhum for encontrado
+  } catch (error) {
+    console.error("Erro ao tentar buscar usuário:", error);
+    throw error; // Lança o erro para ser tratado no código que chama a função
+  }
 }
 
-app.get('/teste',(req,res)=>{
-res.send(verificarLines())
+
+
+
+app.get('/teste', async (req,res)=>{
+  var id = await verificarLines()
+res.send({id})
 })
