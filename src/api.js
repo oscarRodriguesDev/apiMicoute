@@ -38,20 +38,25 @@ app.get("/", (req, res) => {
  * comportamentais que devem ser feit
  */
 app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
-  /*   const {user,inovação,autonomia,competicao,meritocracia,estabilidade,ordem,acolhimento,proposito} = req.body; */
-  //a requisição deve enviar os arrays, o id e o usuario que seão tratados abaixo
+
   try {
-    
+    var verification =  false;
     var id = await automate.verificarLinesUser(admin)
-    console.log({id:id})
+  
     if(id===false){
       id= await automate.definitionID('id-usuario',admin)
-      console.log({id:id})
+    
+
+      verification = false
+    
     }else{
+      verification = true
       id = await automate.verificarLinesUser(admin)
     }
 
-    var user = "Usuario 1";
+    console.log('verification '+ verification)
+
+    var user = `usuario-${id}`;
     var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
     var autonomia = calcularNota([7, 5, 4, 9, 1], 2.5);
     var competicao = calcularNota([5, 4, 4, 9], 3.12);
@@ -110,12 +115,21 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
       },
     };
 
-    const usuarioRef = await admin
+ 
+    if(!verification){
+
+      await automate.addUsuario(admin,'Perfil Usuario',resposta)
+    }else{
+      console.log(' antes de atualizar')
+      await automate.updateUsuario(admin,'Perfil Usuario',resposta)
+     
+    } 
+     /* const usuarioRef = await admin
       .firestore()
       .collection("Perfil Usuario")
       .add({
         perfil_do_usuario: resposta,
-      });
+      });  */
     res.json({
       message: `Fit cultural de ${resposta.dados_do_usuario.user} salvo com sucesso na base de dados`,
     });
@@ -620,7 +634,7 @@ function calcularNota(lista, peso) {
 }
 
 /*define o id para o usuario*/
-async function definitionID(storageID) {
+/* async function definitionID(storageID) {
   try {
     var status =  await verificarLines()
     console.log(status)
@@ -651,7 +665,7 @@ async function definitionID(storageID) {
     console.error("Erro:", error);
     throw error;
   }
-}
+} */
 
 
 /* 
@@ -686,6 +700,6 @@ return  userIdx;
  */
 
 app.get('/teste', async (req,res)=>{
-  var id = await automate.verificarLinesUser(admin)
+  var id = await automate.updateUsuario(admin,'Perfil Usuario' ,'atualizado')
 res.send({id})
 })
