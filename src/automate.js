@@ -67,8 +67,6 @@ function calcularNota(lista, peso) {
 
   
 
-
-
   /*função para registrar novos usuarios pessoas fisica no banco*/ 
   async function addUsuario(admin,rotulo,dado){
     try{
@@ -114,8 +112,6 @@ async function updateUsuario(admin, rotulo, dados) {
   }
   
    
-
-  
 
   
   /*função para registrar novos usuarios pessoas fisica no banco*/ 

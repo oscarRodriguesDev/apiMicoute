@@ -143,13 +143,26 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
 
 
 
-//precisa definir rota para salvar empresa
 app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
-  /*   const {user,inovação,autonomia,competicao,meritocracia,estabilidade,ordem,acolhimento,proposito} = req.body; */
-  //a requisição deve enviar os arrays, o id e o usuario que seão tratados abaixo
+
   try {
-    var id = await definitionID("id-empresa");
-    var empresa = "empresa 3";
+    var verification =  false;
+    var id = await automate.verificarLinesUser(admin)
+  
+    if(id===false){
+      id= await automate.definitionID('id-Empresa',admin)
+    
+
+      verification = false
+    
+    }else{
+      verification = true
+      id = await automate.verificarLinesUser(admin)
+    }
+
+    console.log('verification '+ verification)
+
+    var user = `usuario-${id}`;
     var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
     var autonomia = calcularNota([7, 5, 4, 9, 1], 2.5);
     var competicao = calcularNota([5, 4, 4, 9], 3.12);
@@ -180,7 +193,7 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
 
     const data = {
       id,
-      user: empresa,
+      user,
       inovacao,
       autonomia,
       competicao,
@@ -192,9 +205,9 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
     };
     //respostas do fit cultural
     const resposta = {
-      dados_do_empresa: {
+      dados_do_usuario: {
         id: data.id,
-        empresa: data.user,
+        user: data.user,
       },
       fitcultural: {
         inovacao: data.inovacao,
@@ -208,14 +221,23 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
       },
     };
 
-    const usuarioRef = await admin
+ 
+    if(!verification){
+
+      await automate.addUsuario(admin,'Perfil Empresa',resposta)
+    }else{
+      console.log(' antes de atualizar')
+      await automate.updateUsuario(admin,'Perfil Empresa',resposta)
+     
+    } 
+     /* const usuarioRef = await admin
       .firestore()
-      .collection("Perfil Empresa")
+      .collection("Perfil Usuario")
       .add({
-        perfil_da_empresa: resposta,
-      });
+        perfil_do_usuario: resposta,
+      });  */
     res.json({
-      message: `Fit cultural de ${resposta.dados_do_empresa.empresa} salvo com sucesso na base de dados`,
+      message: `Fit cultural de ${resposta.dados_do_usuario.user} salvo com sucesso na base de dados`,
     });
   } catch (error) {
     res.json({
@@ -223,6 +245,9 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
     });
   }
 });
+
+
+
 
 
 
