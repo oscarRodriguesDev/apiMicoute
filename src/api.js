@@ -5,6 +5,7 @@ const app = express();
 const port = 3001;
 var serviceAccount = require("./services/credential.json");
 var admin = require("firebase-admin");
+var automate =  require('./automate')
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -41,14 +42,16 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
   //a requisição deve enviar os arrays, o id e o usuario que seão tratados abaixo
   try {
     
-    var id = await verificarLines()
+    var id = await automate.verificarLinesUser(admin)
     console.log({id:id})
     if(id===false){
-      id=definitionID('id-usuario')
+      id= await automate.definitionID('id-usuario',admin)
+      console.log({id:id})
     }else{
-      id = await verificarLines()
+      id = await automate.verificarLinesUser(admin)
     }
-    var user = "Usuario 5";
+
+    var user = "Usuario 1";
     var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
     var autonomia = calcularNota([7, 5, 4, 9, 1], 2.5);
     var competicao = calcularNota([5, 4, 4, 9], 3.12);
@@ -620,6 +623,7 @@ function calcularNota(lista, peso) {
 async function definitionID(storageID) {
   try {
     var status =  await verificarLines()
+    console.log(status)
     
     const antIDQuery = await admin
       .firestore()
@@ -650,7 +654,7 @@ async function definitionID(storageID) {
 }
 
 
-
+/* 
 
 async function verificarLines() {
   try {
@@ -666,21 +670,22 @@ async function verificarLines() {
       const userData = doc.data().perfil_do_usuario.dados_do_usuario;
       if (userData.user === "disponible") {
         userIdx = index;
+
         break; // Interrompe o loop assim que encontrar o usuário disponível
       }else{
 
-        return false // Retorna o índice do usuário ou -1 se nenhum for encontrado
+        userIdx= false // Retorna o índice do usuário ou -1 se nenhum for encontrado
       }
     }
-
+return  userIdx;
   } catch (error) {
     console.error("Erro ao tentar buscar usuário:", error);
     throw error; // Lança o erro para ser tratado no código que chama a função
   }
 }
-
+ */
 
 app.get('/teste', async (req,res)=>{
-  var id = await verificarLines()
+  var id = await automate.verificarLinesUser(admin)
 res.send({id})
 })
