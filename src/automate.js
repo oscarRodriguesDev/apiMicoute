@@ -1,4 +1,8 @@
-//função para calcular a nota de cada uma das culturas
+
+
+
+
+/* Essa função calcula as notas de todas as 8 culturas, tanto para empresas quanto para usuarios pessoa fisica */
 function calcularNota(lista, peso) {
     let soma = lista.reduce(
       (acumulador, valorAtual) => acumulador + ((valorAtual * 10) / 100) * peso,
@@ -10,12 +14,13 @@ function calcularNota(lista, peso) {
   }
 
 
+  /* Essa função determina o id que sera atribuido a cada novo usuario no banco de dados, de forma dinamica e automatizada */
   async function definitionID(storageID, adminBd) {
     var id = 0;
    
     try {
       const snapshot = await adminBd.firestore().collection(storageID).get();
-      if (snapshot.empty) {
+      if (snapshot.empty||id==false) {
         id = 1;
         // Se não houver documentos na coleção, cria um novo documento com o ID especificado
         await adminBd.firestore().collection(storageID).doc('verification-id').set({ id: id });
@@ -34,10 +39,11 @@ function calcularNota(lista, peso) {
   }
   
   
-  
-  
+
+/* Essa função verifica se existem id vazios no banco de dados e preenche com novos usuarios,
+uma melhoria necessaria é que precisa encotnrar e atribuir ao primeiro encontrado, uma ideia para resolver será 
+colocar os id encotrados  em um array e na hora de adcionar o usuario escolher sempre o indice 0 do array*/
   async function verificarLinesUser(admin) {
-    console.log('entrou');
     try {
       const snapshot = await admin
         .firestore()
@@ -131,16 +137,53 @@ async function updateUsuario(admin, rotulo, dados) {
 
 
 
+/* vamos agora criar uma função que deleta usuarios no banco de dados, lembrando que na verdade ao invez de deletar, vamos atribuir o valor 'disponible' para usuario, manter o valor
+do id e deixar o fit cultural vazio */
+async function deletarUsuario(admin, rotulo, id,dados) {
+
+  try {
+    const snapshot = await admin.firestore().collection(rotulo).get();
+
+    snapshot.forEach(async (doc) => {
+      const perfilUsuario = doc.data().perfil_do_usuario;
+      if (perfilUsuario && perfilUsuario.dados_do_usuario) {
+          var dado = perfilUsuario.dados_do_usuario.dados_do_usuario;
+          // Restante do seu código aqui
+      } else {
+          console.error('Perfil do usuário ou dados do usuário não estão definidos');
+      }
+      
+      
+      if (dado.id === id) {
+        console.log(id)
+        try {
+          await doc.ref.update({
+            'perfil_do_usuario': {
+             
+              ...dados  // Novos dados que deseja atualizar
+            }
+          });
+          console.log('função atualizou os dados');
+        } catch (err) {
+          console.error('Erro na atualização de dados', err);
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao buscar usuários', error);
+    throw error;
+  }
+  }
+  
 
 
 
-
-  module.exports= 
-  {
+  module.exports= {
     calcularNota,
     definitionID,
     verificarLinesUser,
     addUsuario,
     addEmpresa,
     updateUsuario,
+    deletarUsuario
   }

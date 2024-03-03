@@ -54,8 +54,6 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
       id = await automate.verificarLinesUser(admin)
     }
 
-    console.log('verification '+ verification)
-
     var user = `usuario-${id}`;
     var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
     var autonomia = calcularNota([7, 5, 4, 9, 1], 2.5);
@@ -124,12 +122,7 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
       await automate.updateUsuario(admin,'Perfil Usuario',resposta)
      
     } 
-     /* const usuarioRef = await admin
-      .firestore()
-      .collection("Perfil Usuario")
-      .add({
-        perfil_do_usuario: resposta,
-      });  */
+  
     res.json({
       message: `Fit cultural de ${resposta.dados_do_usuario.user} salvo com sucesso na base de dados`,
     });
@@ -160,7 +153,6 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
       id = await automate.verificarLinesUser(admin)
     }
 
-    console.log('verification '+ verification)
 
     var user = `usuario-${id}`;
     var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
@@ -226,16 +218,11 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
 
       await automate.addUsuario(admin,'Perfil Empresa',resposta)
     }else{
-      console.log(' antes de atualizar')
+     
       await automate.updateUsuario(admin,'Perfil Empresa',resposta)
      
     } 
-     /* const usuarioRef = await admin
-      .firestore()
-      .collection("Perfil Usuario")
-      .add({
-        perfil_do_usuario: resposta,
-      });  */
+  
     res.json({
       message: `Fit cultural de ${resposta.dados_do_usuario.user} salvo com sucesso na base de dados`,
     });
@@ -596,43 +583,33 @@ app.put("/rh/perfil/usuario/edit-fitcult-empresa/:id", async (req, res) => {
 });
 
 
-//deletar resultado do fit cultural do usuario
 app.delete("/rh/perfil/delete-user/:id", async (req, res) => {
-  
-  var { id } = req.params;
-  id = id.slice(1);
-  var novoNome = "disponible";
-  
-  // Verifica se o novo nome foi fornecido
-  if (!novoNome) {
-    console.log({ error: "O novo nome de usuário não foi fornecido." });
-  }
-  
-  const snapshot = await admin
-    .firestore()
-    .collection("Perfil Usuario")
-    .get();
-  
-  if (snapshot.empty) {
-    console.log({ error: "Usuário não encontrado.", id: id });
-    return res.status(404).json({ error:` Usuário  não encontrado. `});
-  }
-  
-  const usuario = snapshot.docs[id]; // Obtém o primeiro documento retornado pela consulta
-  
-  try {
-    await usuario.ref.update({
-      "perfil_do_usuario.dados_do_usuario.user": novoNome,
-      "perfil_do_usuario.fitcultural":{}
-    });
-    console.log("Nome de usuário atualizado com sucesso.");
-    return res.status(200).json({ message: "Nome de usuário atualizado com sucesso." });
-  } catch (error) {
-    console.error("Erro ao atualizar o nome de usuário:", error);
-    return res.status(500).json({ error: "Erro interno do servidor ao atualizar o nome de usuário." });
-  }
-  
+
+const resposta = {
+  fitcultural: {
+   
+  },
+};
+
+var { id } = req.params;
+id = id.slice(1);
+const snapshot = await admin
+.firestore()
+.collection("Perfil Usuario")
+.get();
+
+let userIdx = false;
+
+for (let index = 0; index < snapshot.docs.length; index++) {
+const doc = snapshot.docs[index];
+const userData = doc.data()
+console.log(userData.perfil_do_usuario)
+
+}
+
+res.send('teste')
 });
+
 
 
 //deletar resultado do fit cultural da empresa
@@ -647,82 +624,7 @@ app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
 
-//função para calcular a nota de cada uma das culturas
-function calcularNota(lista, peso) {
-  let soma = lista.reduce(
-    (acumulador, valorAtual) => acumulador + ((valorAtual * 10) / 100) * peso,
-    0
-  );
-  soma = soma.toFixed(2);
-  soma = Number(soma);
-  return soma;
-}
 
-/*define o id para o usuario*/
-/* async function definitionID(storageID) {
-  try {
-    var status =  await verificarLines()
-    console.log(status)
-    
-    const antIDQuery = await admin
-      .firestore()
-      .collection(storageID)
-      .orderBy("id", "desc")
-      .limit(1)
-      .get();
-
-    let id;
-    if (antIDQuery.empty) {
-      // Se não houver documentos na coleção, começamos com ID 1
-      id = 1;
-      await admin.firestore().collection(storageID).doc().set({ id: id });
-    } else if(!antIDQuery.empty&&status!=-1) {
-      id = Number(status)
-      console.log('deverá atualizar usuario vazio no id 2')
-    }else{
-      // Se houver um documento, obtemos o último ID, incrementamos e substituímos o documento existente
-      const antIDDoc = antIDQuery.docs[0];
-      id = antIDDoc.data().id + 1;
-      await antIDDoc.ref.set({ id: id });
-    }
-    return id-1;
-  } catch (error) {
-    console.error("Erro:", error);
-    throw error;
-  }
-} */
-
-
-/* 
-
-async function verificarLines() {
-  try {
-    const snapshot = await admin
-      .firestore()
-      .collection("Perfil Usuario")
-      .get();
-
-    let userIdx = false; // Inicializamos como -1 para indicar que não encontramos nenhum usuário
-
-    for (let index = 1; index < snapshot.docs.length; index++) {
-      const doc = snapshot.docs[index];
-      const userData = doc.data().perfil_do_usuario.dados_do_usuario;
-      if (userData.user === "disponible") {
-        userIdx = index;
-
-        break; // Interrompe o loop assim que encontrar o usuário disponível
-      }else{
-
-        userIdx= false // Retorna o índice do usuário ou -1 se nenhum for encontrado
-      }
-    }
-return  userIdx;
-  } catch (error) {
-    console.error("Erro ao tentar buscar usuário:", error);
-    throw error; // Lança o erro para ser tratado no código que chama a função
-  }
-}
- */
 
 app.get('/teste', async (req,res)=>{
   var id = await automate.updateUsuario(admin,'Perfil Usuario' ,'atualizado')
