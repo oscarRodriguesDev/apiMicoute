@@ -1,5 +1,36 @@
 
 
+//retorna todas as rotas da api
+function allRoutes(){
+  return(
+    {
+      "rotas": {
+        "post": {
+          "criar_usuario_pessoa_fisica": "http://localhost:3001/rh/perfil/usuario/fitcultural",
+          "criar_empresa": "http://localhost:3001/rh/perfil/empresa/fitcultural"
+        },
+        "get": {
+          "recuperar_usuarios_pessoa_fisica": "http://localhost:3001/rh/perfil/usuarios/",
+          "recuperar_usuarios_empresa": "http://localhost:3001/rh/perfil/empresa/",
+          "recuperar_usuario_pessoa_fisica_por_id": "http://localhost:3001/rh/perfil/usuarios/:id",
+          "recuperar_usuario_empresa_por_id": "http://localhost:3001/rh/perfil/empresa/:id"
+        },
+        "put": {
+          "alterar_nome_usuario": "http://localhost:3001/rh/perfil/usuario/edit-usuario/:id",
+          "alterar_nome_empresa": "http://localhost:3001/rh/perfil/usuario/edit-empresa/:id",
+          "alterar_fit_cultural_usuario": "http://localhost:3001/rh/perfil/usuario/edit-fitcult-usuario/:id",
+          "alterar_fit_cultural_empresa": "http://localhost:3001/rh/perfil/usuario/edit-fitcult-empresa/:id"
+        },
+
+        "delete":{
+          "deletar_usuario":"http://localhost:3001//rh/perfil/delete-user/:id",
+        }
+      }
+    }
+    
+  )
+}
+
 
 
 /* Essa função calcula as notas de todas as 8 culturas, tanto para empresas quanto para usuarios pessoa fisica */
@@ -45,11 +76,11 @@ function calcularNota(lista, peso) {
 /* Essa função verifica se existem id vazios no banco de dados e preenche com novos usuarios,
 uma melhoria necessaria é que precisa encotnrar e atribuir ao primeiro encontrado, uma ideia para resolver será 
 colocar os id encotrados  em um array e na hora de adcionar o usuario escolher sempre o indice 0 do array*/
-  async function verificarLinesUser(admin) {
+  async function verificarLinesUser(admin,rotulo) {
     try {
       const snapshot = await admin
         .firestore()
-        .collection("Perfil Usuario")
+        .collection(rotulo)
         .get();
   
       let userIdx = false;
@@ -57,7 +88,6 @@ colocar os id encotrados  em um array e na hora de adcionar o usuario escolher s
       for (let index = 0; index < snapshot.docs.length; index++) {
         const doc = snapshot.docs[index];
         const userData = doc.data().perfil_do_usuario.dados_do_usuario;
-        console.log(userData.user )
         if (userData.user === "disponible") {
          userIdx = userData.id
          // break;
@@ -138,38 +168,28 @@ async function updateUsuario(admin, rotulo, dados) {
 
 /* vamos agora criar uma função que deleta usuarios no banco de dados, lembrando que na verdade ao invez de deletar, vamos atribuir o valor 'disponible' para usuario, manter o valor
 do id e deixar o fit cultural vazio */
-async function deletarUsuario(admin, rotulo, id,dados) {
-
+async function deletarUsuario(admin, rotulo, id) {
   try {
     const snapshot = await admin.firestore().collection(rotulo).get();
-
     snapshot.forEach(async (doc) => {
-      const perfilUsuario = doc.data().perfil_do_usuario;
-      if (perfilUsuario && perfilUsuario.dados_do_usuario) {
-          var dado = perfilUsuario.dados_do_usuario.dados_do_usuario;
-          // Restante do seu código aqui
-      } else {
-          console.error('Perfil do usuário ou dados do usuário não estão definidos');
-      }
-      
-      
-      if (dado.id === id) {
-        console.log(id)
+      if (perfil.dados_do_usuario.id == id) {
         try {
-          await doc.ref.update({
-            'perfil_do_usuario': {
-             
-              ...dados  // Novos dados que deseja atualizar
-            }
-          });
-          console.log('função atualizou os dados');
+         await doc.ref.update({
+             perfil_do_usuario:{
+              dados_do_usuario:{
+                id:perfil.dados_do_usuario.id,
+                user:'disponible'
+              },fiticultural:{
+                 fit:'nulo'
+              }
+             }
+            });
         } catch (err) {
-          console.error('Erro na atualização de dados', err);
+     
         }
       }
     });
   } catch (error) {
-    console.error('Erro ao buscar usuários', error);
     throw error;
   }
   }
@@ -184,5 +204,6 @@ async function deletarUsuario(admin, rotulo, id,dados) {
     addUsuario,
     addEmpresa,
     updateUsuario,
-    deletarUsuario
+    deletarUsuario,
+    allRoutes
   }

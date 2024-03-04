@@ -26,8 +26,8 @@ app.get("/verification", (req, res) => {
  *a verificação de que a api esta em pleno funcionamento
  */
 
-app.get("/", (req, res) => {
-  res.json({ message: "Api no ar" });
+app.get("/all-routes", (req, res) => {
+  res.json(automate.allRoutes());
 });
 
 
@@ -41,15 +41,15 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
 
   try {
     var verification =  false;
-    var id = await automate.verificarLinesUser(admin)
+    var id = await automate.verificarLinesUser(admin,'Perfil Usuario')
   
     if(id===false){
-      id= await automate.definitionID('id-usurio',admin)
+      id= await automate.definitionID('id-usuario',admin)
       verification = false
     
     }else{
       verification = true
-      id = await automate.verificarLinesUser(admin)
+      id = await automate.verificarLinesUser(admin,'Perfil Usuario')
     }
 
     var user = `usuario-${id}`;
@@ -121,7 +121,7 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
     } 
   
     res.json({
-      message: `Usuario${resposta.dados_do_usuario.user} registrado com sucesso!`,
+      message: `Usuario ${resposta.dados_do_usuario.user} registrado com sucesso!`,
     });
   } catch (error) {
     res.json({
@@ -138,7 +138,7 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
  
   try {
     var verification =  false;
-    var id = await automate.verificarLinesUser(admin)
+    var id = await automate.verificarLinesUser(admin,'Perfil Empresa')
   
     if(id==false){
       id= await automate.definitionID('id-empresa',admin)
@@ -146,7 +146,7 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
     
     }else{
       verification = true
-      id = await automate.verificarLinesUser(admin)
+      id = await automate.verificarLinesUser(admin,'Perfil Empresa')
     }
 
     var user = `empresa-${id}`;
@@ -580,30 +580,17 @@ app.put("/rh/perfil/usuario/edit-fitcult-empresa/:id", async (req, res) => {
 
 
 app.delete("/rh/perfil/delete-user/:id", async (req, res) => {
+  var { id } = req.params;
+  id = id.slice(1);
 
-const resposta = {
-  fitcultural: {
-   
-  },
-};
 
-var { id } = req.params;
-id = id.slice(1);
-const snapshot = await admin
-.firestore()
-.collection("Perfil Usuario")
-.get();
-
-let userIdx = false;
-
-for (let index = 0; index < snapshot.docs.length; index++) {
-const doc = snapshot.docs[index];
-const userData = doc.data()
-console.log(userData.perfil_do_usuario)
-
-}
-
-res.send('teste')
+  try {
+    await automate.deletarUsuario(admin, "Perfil Usuario", id);
+    res.send('Usuario deletado com sucesso!');
+  
+  } catch (err) {
+    res.send({ erro: err.message });
+  }
 });
 
 
