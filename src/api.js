@@ -5,7 +5,7 @@ const app = express();
 const port = 3001;
 var serviceAccount = require("./services/credential.json");
 var admin = require("firebase-admin");
-var automate =  require('./automate')
+var automate = require("./automate");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -30,26 +30,21 @@ app.get("/all-routes", (req, res) => {
   res.json(automate.allRoutes());
 });
 
-
-
-
 /*
  *Abaixo temos todas os meios de salvar o fit cultural do usuario e empresa que é apenas um dos testes
  * comportamentais que devem ser feit
  */
 app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
-
   try {
-    var verification =  false;
-    var id = await automate.verificarLinesUser(admin,'Perfil Usuario')
-  
-    if(id===false){
-      id= await automate.definitionID('id-usuario',admin)
-      verification = false
-    
-    }else{
-      verification = true
-      id = await automate.verificarLinesUser(admin,'Perfil Usuario')
+    var verification = false;
+    var id = await automate.verificarLinesUser(admin, "Perfil Usuario");
+
+    if (id === false) {
+      id = await automate.definitionID("id-usuario", admin);
+      verification = false;
+    } else {
+      verification = true;
+      id = await automate.verificarLinesUser(admin, "Perfil Usuario");
     }
 
     var user = `usuario-${id}`;
@@ -111,42 +106,33 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
       },
     };
 
- 
-    if(!verification){
-      
-      await automate.addUsuario(admin,'Perfil Usuario',resposta)
-    }else{
-      
-      await automate.updateUsuario(admin,'Perfil Usuario',resposta)  
-    } 
-  
+    if (!verification) {
+      await automate.addUsuario(admin, "Perfil Usuario", resposta);
+    } else {
+      await automate.updateUsuario(admin, "Perfil Usuario", resposta);
+    }
+
     res.json({
       message: `Usuario ${resposta.dados_do_usuario.user} registrado com sucesso!`,
     });
   } catch (error) {
     res.json({
-     error:error.message
+      error: error.message,
     });
   }
 });
 
-
-
-
 app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
-
- 
   try {
-    var verification =  false;
-    var id = await automate.verificarLinesUser(admin,'Perfil Empresa')
-  
-    if(id==false){
-      id= await automate.definitionID('id-empresa',admin)
-      verification = false
-    
-    }else{
-      verification = true
-      id = await automate.verificarLinesUser(admin,'Perfil Empresa')
+    var verification = false;
+    var id = await automate.verificarLinesUser(admin, "Perfil Empresa");
+
+    if (id == false) {
+      id = await automate.definitionID("id-empresa", admin);
+      verification = false;
+    } else {
+      verification = true;
+      id = await automate.verificarLinesUser(admin, "Perfil Empresa");
     }
 
     var user = `empresa-${id}`;
@@ -208,33 +194,24 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
       },
     };
 
- 
-    if(!verification){
-      
-      await automate.addUsuario(admin,'Perfil Empresa',resposta)
-    }else{
-      
-      await automate.updateUsuario(admin,'Perfil Empresa',resposta)
-    
-     
-    } 
-  
+    if (!verification) {
+      await automate.addUsuario(admin, "Perfil Empresa", resposta);
+    } else {
+      await automate.updateUsuario(admin, "Perfil Empresa", resposta);
+    }
+
     res.json({
       message: `Empresa ${resposta.dados_do_usuario.user} registrada com sucesso`,
     });
   } catch (error) {
     res.json({
-     error:error.message
+      error: error.message,
     });
   }
 });
 
-
-
-
-
-
 /* retorna todos os fit cultural dos usuários */
+
 app.get("/rh/perfil/usuarios/", async (req, res) => {
   try {
     const snapshot = await admin.firestore().collection("Perfil Usuario").get();
@@ -248,8 +225,6 @@ app.get("/rh/perfil/usuarios/", async (req, res) => {
     return res.status(400).send({ erro: "Values not Found", error: err });
   }
 });
-
-
 
 /* Retorna o fit culturual de todas as empresas */
 app.get("/rh/perfil/empresa/", async (req, res) => {
@@ -265,8 +240,6 @@ app.get("/rh/perfil/empresa/", async (req, res) => {
     return res.status(400).send({ erro: "Values not Found", error: err });
   }
 });
-
-
 
 /* Retorna o fit cultural do usuario informado no id */
 app.get("/rh/perfil/usuarios/:id", async (req, res) => {
@@ -296,8 +269,6 @@ app.get("/rh/perfil/usuarios/:id", async (req, res) => {
   }
 });
 
-
-
 /* Retorna o fit cultural da empresa pelo id */
 app.get("/rh/perfil/empresa/:id", async (req, res) => {
   var { id } = req.params;
@@ -326,90 +297,84 @@ app.get("/rh/perfil/empresa/:id", async (req, res) => {
   }
 });
 
-
-
-
 //alterar o nome de usuaio
 app.put("/rh/perfil/usuario/edit-user/:id", async (req, res) => {
- 
   var { id } = req.params;
   id = id.slice(1);
   var novoNome = "Otavio Lube";
-  
+
   // Verifica se o novo nome foi fornecido
   if (!novoNome) {
     console.log({ error: "O novo nome de usuário não foi fornecido." });
   }
-  
-  const snapshot = await admin
-    .firestore()
-    .collection("Perfil Usuario")
-    .get();
-  
+
+  const snapshot = await admin.firestore().collection("Perfil Usuario").get();
+
   if (snapshot.empty) {
     console.log({ error: "Usuário não encontrado.", id: id });
-    return res.status(404).json({ error:` Usuário  não encontrado. `});
+    return res.status(404).json({ error: ` Usuário  não encontrado. ` });
   }
-  
-  const usuario = snapshot.docs[id-1]; // Obtém o primeiro documento retornado pela consulta
-  
+
+  const usuario = snapshot.docs[id - 1]; // Obtém o primeiro documento retornado pela consulta
+
   try {
     await usuario.ref.update({
-      "perfil_do_usuario.dados_do_usuario.user": novoNome
+      "perfil_do_usuario.dados_do_usuario.user": novoNome,
     });
     console.log("Nome de usuário atualizado com sucesso.");
-    return res.status(200).json({ message: "Nome de usuário atualizado com sucesso." });
+    return res
+      .status(200)
+      .json({ message: "Nome de usuário atualizado com sucesso." });
   } catch (error) {
     console.error("Erro ao atualizar o nome de usuário:", error);
-    return res.status(500).json({ error: "Erro interno do servidor ao atualizar o nome de usuário." });
+    return res
+      .status(500)
+      .json({
+        error: "Erro interno do servidor ao atualizar o nome de usuário.",
+      });
   }
-  
 });
-
-
 
 //alterar nome da empresa
 app.put("/rh/perfil/usuario/edit-empresa/:id", async (req, res) => {
- 
   var { id } = req.params;
   id = id.slice(1);
   var novoNome = "Canguru Supermercadocls";
-  
+
   // Verifica se o novo nome foi fornecido
   if (!novoNome) {
     console.log({ error: "O novo nome de usuário não foi fornecido." });
   }
-  
-  const snapshot = await admin
-    .firestore()
-    .collection("Perfil Empresa")
-    .get();
-  
+
+  const snapshot = await admin.firestore().collection("Perfil Empresa").get();
+
   if (snapshot.empty) {
     console.log({ error: "Usuário não encontrado.", id: id });
-    return res.status(404).json({ error:` Usuário  não encontrado. `});
+    return res.status(404).json({ error: ` Usuário  não encontrado. ` });
   }
-  
-  const usuario = snapshot.docs[id-1]; // Obtém o primeiro documento retornado pela consulta
-  
+
+  const usuario = snapshot.docs[id - 1]; // Obtém o primeiro documento retornado pela consulta
+
   try {
     await usuario.ref.update({
-      "perfil_da_empresa.dados_do_empresa.user": novoNome
+      "perfil_da_empresa.dados_do_empresa.user": novoNome,
     });
     console.log("Nome de usuário atualizado com sucesso.");
-    return res.status(200).json({ message: "Nome de usuário atualizado com sucesso." });
+    return res
+      .status(200)
+      .json({ message: "Nome de usuário atualizado com sucesso." });
   } catch (error) {
     console.error("Erro ao atualizar o nome de usuário:", error);
-    return res.status(500).json({ error: "Erro interno do servidor ao atualizar o nome de usuário." });
+    return res
+      .status(500)
+      .json({
+        error: "Erro interno do servidor ao atualizar o nome de usuário.",
+      });
   }
-  
 });
-
-
 
 //alterar fit cultural de usuario
 app.put("/rh/perfil/usuario/edit-fitcult-usuario/:id", async (req, res) => {
-
   //valores serão recebidos pela requisição
   var inovacao = calcularNota([1, 3, 6, 1, 3, 5], 2.08);
   var autonomia = calcularNota([7, 5, 3, 4, 1], 2.5);
@@ -462,40 +427,37 @@ app.put("/rh/perfil/usuario/edit-fitcult-usuario/:id", async (req, res) => {
       proposito: data.proposito,
     },
   };
-//valores acima vão ser recebidos no corpo da requisição
- 
+  //valores acima vão ser recebidos no corpo da requisição
+
   var { id } = req.params;
   id = id.slice(1);
- 
-  
-  const snapshot = await admin
-    .firestore()
-    .collection("Perfil Usuario")
-    .get();
-  
+
+  const snapshot = await admin.firestore().collection("Perfil Usuario").get();
+
   if (snapshot.empty) {
-    return res.status(404).json({ error:`Usuário não foi localizado! `});
+    return res.status(404).json({ error: `Usuário não foi localizado! ` });
   }
-  
-  const empresa = snapshot.docs[id-1]; 
-  
+
+  const empresa = snapshot.docs[id - 1];
+
   try {
     await empresa.ref.update({
-      "perfil_do_usuario.fitcultural": resposta.fitcultural
+      "perfil_do_usuario.fitcultural": resposta.fitcultural,
     });
-   
-    return res.status(200).json({ message: "fit cultural atualizado com sucesso!" });
+
+    return res
+      .status(200)
+      .json({ message: "fit cultural atualizado com sucesso!" });
   } catch (error) {
     console.error("Erro ao atualizar o Fit cultural", error);
-    return res.status(500).json({ error: "Erro interno do servidor", erro:error });
+    return res
+      .status(500)
+      .json({ error: "Erro interno do servidor", erro: error });
   }
-  
 });
-
 
 //alterar fit cultural da empresa
 app.put("/rh/perfil/usuario/edit-fitcult-empresa/:id", async (req, res) => {
-
   //valores serão recebidos pela requisição
   var inovacao = calcularNota([1, 3, 6, 1, 3, 5], 2.08);
   var autonomia = calcularNota([7, 5, 3, 4, 1], 2.5);
@@ -548,52 +510,46 @@ app.put("/rh/perfil/usuario/edit-fitcult-empresa/:id", async (req, res) => {
       proposito: data.proposito,
     },
   };
-//valores acima vão ser recebidos no corpo da requisição
- 
+  //valores acima vão ser recebidos no corpo da requisição
+
   var { id } = req.params;
   id = id.slice(1);
- 
-  
-  const snapshot = await admin
-    .firestore()
-    .collection("Perfil Empresa")
-    .get();
-  
+
+  const snapshot = await admin.firestore().collection("Perfil Empresa").get();
+
   if (snapshot.empty) {
-    return res.status(404).json({ error:`empresa não foi localizado! `});
+    return res.status(404).json({ error: `empresa não foi localizado! ` });
   }
-  
-  const empresa = snapshot.docs[id-1]; 
-  
+
+  const empresa = snapshot.docs[id - 1];
+
   try {
     await empresa.ref.update({
-      "perfil_da_empresa.fitcultural": resposta.fitcultural
+      "perfil_da_empresa.fitcultural": resposta.fitcultural,
     });
-   
-    return res.status(200).json({ message: "fit cultural atualizado com sucesso!" });
+
+    return res
+      .status(200)
+      .json({ message: "fit cultural atualizado com sucesso!" });
   } catch (error) {
     console.error("Erro ao atualizar o Fit cultural", error);
-    return res.status(500).json({ error: "Erro interno do servidor", erro:error });
+    return res
+      .status(500)
+      .json({ error: "Erro interno do servidor", erro: error });
   }
-  
 });
-
 
 app.delete("/rh/perfil/delete-user/:id", async (req, res) => {
   var { id } = req.params;
   id = id.slice(1);
 
-
   try {
     await automate.deletarUsuario(admin, "Perfil Usuario", id);
-    res.send('Usuario deletado com sucesso!');
-  
+    res.send("Usuario deletado com sucesso!");
   } catch (err) {
     res.send({ erro: err.message });
   }
 });
-
-
 
 //deletar resultado do fit cultural da empresa
 app.delete("/rh/perfil/delete-empresa/:id", (req, res) => {
@@ -601,15 +557,11 @@ app.delete("/rh/perfil/delete-empresa/:id", (req, res) => {
   res.json({ message: `vai deletar a empresa no banco` });
 });
 
-
-
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
 
-
-
-app.get('/teste', async (req,res)=>{
-  var id = await automate.updateUsuario(admin,'Perfil Usuario' ,'atualizado')
-res.send({id})
-})
+app.get("/teste", async (req, res) => {
+  var id = await automate.updateUsuario(admin, "Perfil Usuario", "atualizado");
+  res.send({ id });
+});
