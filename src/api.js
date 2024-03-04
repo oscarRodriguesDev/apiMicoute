@@ -41,7 +41,7 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
 
   try {
     var verification =  false;
-    var id = await automate.verificarLinesUser(admin)
+    var id = await automate.verificarLinesUser(admin,'Perfil Usuario')
   
     if(id===false){
       id= await automate.definitionID('id-usurio',admin)
@@ -49,7 +49,7 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
     
     }else{
       verification = true
-      id = await automate.verificarLinesUser(admin)
+      id = await automate.verificarLinesUser(admin,'Perfil Usuario')
     }
 
     var user = `usuario-${id}`;
@@ -121,7 +121,7 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
     } 
   
     res.json({
-      message: `Usuario${resposta.dados_do_usuario.user} registrado com sucesso!`,
+      message: `Usuario ${resposta.dados_do_usuario.user} registrado com sucesso!`,
     });
   } catch (error) {
     res.json({
@@ -138,7 +138,7 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
  
   try {
     var verification =  false;
-    var id = await automate.verificarLinesUser(admin)
+    var id = await automate.verificarLinesUser(admin,'Perfil Empresa')
   
     if(id==false){
       id= await automate.definitionID('id-empresa',admin)
@@ -146,7 +146,7 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
     
     }else{
       verification = true
-      id = await automate.verificarLinesUser(admin)
+      id = await automate.verificarLinesUser(admin,'Perfil Empresa')
     }
 
     var user = `empresa-${id}`;

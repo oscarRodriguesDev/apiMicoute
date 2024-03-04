@@ -45,11 +45,11 @@ function calcularNota(lista, peso) {
 /* Essa função verifica se existem id vazios no banco de dados e preenche com novos usuarios,
 uma melhoria necessaria é que precisa encotnrar e atribuir ao primeiro encontrado, uma ideia para resolver será 
 colocar os id encotrados  em um array e na hora de adcionar o usuario escolher sempre o indice 0 do array*/
-  async function verificarLinesUser(admin) {
+  async function verificarLinesUser(admin,rotulo) {
     try {
       const snapshot = await admin
         .firestore()
-        .collection("Perfil Usuario")
+        .collection(rotulo)
         .get();
   
       let userIdx = false;
@@ -57,7 +57,6 @@ colocar os id encotrados  em um array e na hora de adcionar o usuario escolher s
       for (let index = 0; index < snapshot.docs.length; index++) {
         const doc = snapshot.docs[index];
         const userData = doc.data().perfil_do_usuario.dados_do_usuario;
-        console.log(userData.user )
         if (userData.user === "disponible") {
          userIdx = userData.id
          // break;
