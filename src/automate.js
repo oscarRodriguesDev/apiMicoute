@@ -17,23 +17,25 @@ function calcularNota(lista, peso) {
   /* Essa função determina o id que sera atribuido a cada novo usuario no banco de dados, de forma dinamica e automatizada */
   async function definitionID(storageID, adminBd) {
     var id = 0;
-   
+   console.log('entrando no definitionID')
     try {
       const snapshot = await adminBd.firestore().collection(storageID).get();
-      if (snapshot.empty||id==false) {
+      if (snapshot.empty) {
         id = 1;
+        console.log('case empty')
         // Se não houver documentos na coleção, cria um novo documento com o ID especificado
         await adminBd.firestore().collection(storageID).doc('verification-id').set({ id: id });
         return id;
       } else {
+        console.log('case existente')
         const doc = snapshot.docs[0];
         const data = doc.data();
-        id = data.id ? data.id + 1 : 1;
+        id = data.id 
+        id+=1
         await adminBd.firestore().collection(storageID).doc(doc.id).update({ id: id });
         return id;
       }
     } catch (error) {
-     
     console.log(error)
     }
   }
@@ -61,9 +63,6 @@ colocar os id encotrados  em um array e na hora de adcionar o usuario escolher s
          // break;
         }
       }
-
-      console.log('id agora é: ' + userIdx);
-  
       return userIdx;
     } catch (error) {
       console.error("Erro ao tentar buscar usuário:", error);

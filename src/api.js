@@ -44,9 +44,7 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
     var id = await automate.verificarLinesUser(admin)
   
     if(id===false){
-      id= await automate.definitionID('id-usuario',admin)
-    
-
+      id= await automate.definitionID('id-usurio',admin)
       verification = false
     
     }else{
@@ -55,14 +53,14 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
     }
 
     var user = `usuario-${id}`;
-    var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
-    var autonomia = calcularNota([7, 5, 4, 9, 1], 2.5);
-    var competicao = calcularNota([5, 4, 4, 9], 3.12);
-    var meritocracia = calcularNota([1, 4, 2, 9], 3.12);
-    var estabilidade = calcularNota([1, 3, 8, 10], 3.12);
-    var ordem = calcularNota([4, 5, 3, 7], 3.12);
-    var acolhimento = calcularNota([1, 3, 5, 7, 9, 2], 2.08);
-    var proposito = calcularNota([7, 9, 5, 1], 3.12);
+    var inovacao = automate.calcularNota([5, 4, 6, 1, 3, 5], 2.08);
+    var autonomia = automate.calcularNota([7, 5, 4, 9, 1], 2.5);
+    var competicao = automate.calcularNota([5, 4, 4, 9], 3.12);
+    var meritocracia = automate.calcularNota([1, 4, 2, 9], 3.12);
+    var estabilidade = automate.calcularNota([1, 3, 8, 10], 3.12);
+    var ordem = automate.calcularNota([4, 5, 3, 7], 3.12);
+    var acolhimento = automate.calcularNota([1, 3, 5, 7, 9, 2], 2.08);
+    var proposito = automate.calcularNota([7, 9, 5, 1], 3.12);
 
     //calculo percentual
     var total =
@@ -115,20 +113,19 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
 
  
     if(!verification){
-
+      
       await automate.addUsuario(admin,'Perfil Usuario',resposta)
     }else{
-      console.log(' antes de atualizar')
-      await automate.updateUsuario(admin,'Perfil Usuario',resposta)
-     
+      
+      await automate.updateUsuario(admin,'Perfil Usuario',resposta)  
     } 
   
     res.json({
-      message: `Fit cultural de ${resposta.dados_do_usuario.user} salvo com sucesso na base de dados`,
+      message: `Usuario${resposta.dados_do_usuario.user} registrado com sucesso!`,
     });
   } catch (error) {
     res.json({
-      message: error | `err 400 NOT FOUND`,
+     error:error.message
     });
   }
 });
@@ -138,14 +135,13 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
 
 app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
 
+ 
   try {
     var verification =  false;
     var id = await automate.verificarLinesUser(admin)
   
-    if(id===false){
-      id= await automate.definitionID('id-Empresa',admin)
-    
-
+    if(id==false){
+      id= await automate.definitionID('id-empresa',admin)
       verification = false
     
     }else{
@@ -153,16 +149,15 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
       id = await automate.verificarLinesUser(admin)
     }
 
-
-    var user = `usuario-${id}`;
-    var inovacao = calcularNota([5, 4, 6, 1, 3, 5], 2.08);
-    var autonomia = calcularNota([7, 5, 4, 9, 1], 2.5);
-    var competicao = calcularNota([5, 4, 4, 9], 3.12);
-    var meritocracia = calcularNota([1, 4, 2, 9], 3.12);
-    var estabilidade = calcularNota([1, 3, 8, 10], 3.12);
-    var ordem = calcularNota([4, 5, 3, 7], 3.12);
-    var acolhimento = calcularNota([1, 3, 5, 7, 9, 2], 2.08);
-    var proposito = calcularNota([7, 9, 5, 1], 3.12);
+    var user = `empresa-${id}`;
+    var inovacao = automate.calcularNota([5, 4, 6, 1, 3, 5], 2.08);
+    var autonomia = automate.calcularNota([7, 5, 4, 9, 1], 2.5);
+    var competicao = automate.calcularNota([5, 4, 4, 9], 3.12);
+    var meritocracia = automate.calcularNota([1, 4, 2, 9], 3.12);
+    var estabilidade = automate.calcularNota([1, 3, 8, 10], 3.12);
+    var ordem = automate.calcularNota([4, 5, 3, 7], 3.12);
+    var acolhimento = automate.calcularNota([1, 3, 5, 7, 9, 2], 2.08);
+    var proposito = automate.calcularNota([7, 9, 5, 1], 3.12);
 
     //calculo percentual
     var total =
@@ -215,20 +210,21 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
 
  
     if(!verification){
-
+      
       await automate.addUsuario(admin,'Perfil Empresa',resposta)
     }else{
-     
+      
       await automate.updateUsuario(admin,'Perfil Empresa',resposta)
+    
      
     } 
   
     res.json({
-      message: `Fit cultural de ${resposta.dados_do_usuario.user} salvo com sucesso na base de dados`,
+      message: `Empresa ${resposta.dados_do_usuario.user} registrada com sucesso`,
     });
   } catch (error) {
     res.json({
-      message: error | `err 400 NOT FOUND`,
+     error:error.message
     });
   }
 });
