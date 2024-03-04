@@ -11,8 +11,8 @@
   "dependencies": {
     "admin": "^1.4.1",
     "cors": "^2.8.5",
-    "express": "^4.18.3",
-    "firebase": "^10.8.1",
+    "express": "^4.18.2",
+    "firebase": "^10.8.0",
     "firebase-admin": "^12.0.0",
     "nodemon": "^3.1.0"
   }
