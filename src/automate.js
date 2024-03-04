@@ -138,31 +138,30 @@ async function updateUsuario(admin, rotulo, dados) {
 
 /* vamos agora criar uma função que deleta usuarios no banco de dados, lembrando que na verdade ao invez de deletar, vamos atribuir o valor 'disponible' para usuario, manter o valor
 do id e deixar o fit cultural vazio */
-async function deletarUsuario(admin, rotulo, id,dados) {
+async function deletarUsuario(admin, rotulo, id) {
 
   try {
     const snapshot = await admin.firestore().collection(rotulo).get();
 
     snapshot.forEach(async (doc) => {
-      const perfilUsuario = doc.data().perfil_do_usuario;
-      if (perfilUsuario && perfilUsuario.dados_do_usuario) {
-          var dado = perfilUsuario.dados_do_usuario.dados_do_usuario;
-          // Restante do seu código aqui
-      } else {
-          console.error('Perfil do usuário ou dados do usuário não estão definidos');
-      }
-      
-      
-      if (dado.id === id) {
-        console.log(id)
+      const perfil = doc.data().perfil_do_usuario;
+      console.log(`id ${id}//${perfil.dados_do_usuario.id} `)
+
+      if (perfil.dados_do_usuario.id == id) {
+        console.log(`id ${id}//${perfil.dados_do_usuario.id} `)
         try {
           await doc.ref.update({
-            'perfil_do_usuario': {
-             
-              ...dados  // Novos dados que deseja atualizar
-            }
+         perfil_do_usuario:{
+          dados_do_usuario:{
+            id:perfil.dados_do_usuario.id,
+            user:'disponible'
+          },
+          fitcultural:{
+            dados:'nenhum'
+          }
+         }
           });
-          console.log('função atualizou os dados');
+          console.log('Dados do usuário atualizados');
         } catch (err) {
           console.error('Erro na atualização de dados', err);
         }
