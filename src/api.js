@@ -337,35 +337,26 @@ app.get("/rh/perfil/empresa/:id", async (req, res) => {
  */
  
 app.put("/rh/perfil/usuario/edit-user/:id", async (req, res) => {
-  var { id } = req.params;
-  id = id.slice(1);
-  var novoNome = "Oscar Rodrigues";
-  if (!novoNome) {
-   res.send({message: `O valor de nome não pode ser nulo` });
-  }
-
-  const snapshot = await admin.firestore().collection("Perfil Usuario").get();
-
-  if (snapshot.empty) {
-  
-    return res.status(404).json({message: `Não foi encontrado nenhum usuário com o id informado` });
-  }
-
-  const usuario = snapshot.docs[id - 1]; 
-
-  try {
-    await usuario.ref.update({
-      "perfil_do_usuario.dados_do_usuario.user": novoNome,
-    });
-    return res
-      .status(200)
-      .json({ message: `o nome ${novoNome} foi atribuido ao id ${id}!`});
-  } catch (error) {
-    
-    return res
-      .status(500)
-      .json({message: ` Erro ${error.message} ao tentar renomear o usuário!` });
-  }
+  try{
+    var { id } = req.params;
+    id = id.slice(1);
+    var novoNome = "Cassio Jordan";
+    if (!novoNome) {
+      res.send({ message: "O valor de nome não pode ser nulo!" });
+    } else {
+      const snapshot = await admin.firestore().collection("Perfil Usuario").get();
+      snapshot.forEach(async (doc) => {
+        const perfil = doc.data().perfil_do_usuario.dados_do_usuario;
+       if(perfil.id==id){
+        await doc.ref.update({
+          'perfil_do_usuario.dados_do_usuario.user':novoNome
+        })
+        res.send({message:`O nome ${novoNome} foi atribuido ao usuário no id ${id}`})
+       }
+      });
+    }}catch(err){
+      res.send({message:`O erro ${err.message} ocorreu ao tentar atualizar o nome de usuário`})
+    }
 });
 
 
@@ -375,39 +366,32 @@ app.put("/rh/perfil/usuario/edit-user/:id", async (req, res) => {
  */
 
 app.put("/rh/perfil/usuario/edit-empresa/:id", async (req, res) => {
+  try{
   var { id } = req.params;
   id = id.slice(1);
-  var novoNome = "Dikma Facilities";
-
-  // Verifica se o novo nome foi fornecido
+  var novoNome = "Dikma Digital";
   if (!novoNome) {
- res.send({ message: "O valor de nome não pode ser nulo!" });
-  }
-
-  const snapshot = await admin.firestore().collection("Perfil Empresa").get();
-
-  if (snapshot.empty) {
-    return res.status(404).json({ error: ` Usuário informado não foi encontrado! ` });
-  }
-
-  const usuario = snapshot.docs[id - 1]; // Obtém o primeiro documento retornado pela consulta
-
-  try {
-    await usuario.ref.update({
-      "perfil_da_empresa.dados_do_empresa.user": novoNome,
+    res.send({ message: "O valor de nome não pode ser nulo!" });
+  } else {
+    const snapshot = await admin.firestore().collection("Perfil Empresa").get();
+    snapshot.forEach(async (doc) => {
+      const perfil = doc.data().perfil_do_usuario.dados_do_usuario;
+     if(perfil.id==id){
+      await doc.ref.update({
+        'perfil_do_usuario.dados_do_usuario.user':novoNome
+      })
+      res.send({message:`O nome ${novoNome} foi atribuido à empresa no id ${id}`})
+     }
     });
-    
-    return res
-      .status(200)
-      .json({ message: `O nome ${novoNome} foi atribuido à empresa informada!`});
-  } catch (error) {
-    return res
-      .status(500)
-      .json({
-      message:`Ocorreu o erro ${error.message} ao tentar atualizar um valor no banco de dados`,
-      });
+  }}catch(err){
+    res.send({message:`O erro ${err.message} ocorreu ao tentar atualizar o nome da Empresa`})
   }
 });
+
+  
+
+
+ 
 
 
 

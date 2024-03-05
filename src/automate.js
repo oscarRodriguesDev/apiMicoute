@@ -188,7 +188,7 @@ async function updateUsuario(admin, rotulo, dados) {
           });
         } catch (err) {
           console.error({
-            err: `erro ao tentar deletar ${rotulo} - type of error:  ${err.message}`,
+            err: `erro ao tentar atualizar ${rotulo} - type of error:  ${err.message}`,
           });
         }
       }
