@@ -1,0 +1,6 @@
+-implemntar a rota para deletar empresas - ok 
+-apagar essas mensagens do console e criar mensagens relevantes ok
+-comentarios de codigo para manutenlçoes de codigo criados - ok
+-testar as rotas da api
+- na hora de salvar empresa e usuario o valor do id esta sendo o valor iterado, trabalhar para resolver isso amanha
+- rota get de empresa pelo id esta falhando

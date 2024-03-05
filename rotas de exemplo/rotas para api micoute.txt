@@ -44,3 +44,6 @@ http://localhost:3001/rh/perfil/usuario/edit-fitcult-usuario/:id
 rota para alterar fit cultural da empresa
 http://localhost:3001/rh/perfil/usuario/edit-fitcult-empresa/:id
 
+rota para deletar usuario:
+http://localhost:3001//rh/perfil/delete-user/:id
+
