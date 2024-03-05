@@ -53,8 +53,8 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
       verification = true;
       id = await automate.verificarLinesUser(admin, "Perfil Usuario");
     }
-
     var user = `Cassio-${id}`;
+    var web=   `${user}@email.com`
     var inovacao = automate.calcularNota([5, 4, 6, 1, 3, 5], 2.08);
     var autonomia = automate.calcularNota([7, 5, 4, 9, 1], 2.5);
     var competicao = automate.calcularNota([5, 4, 4, 9], 3.12);
@@ -63,8 +63,6 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
     var ordem = automate.calcularNota([4, 5, 3, 7], 3.12);
     var acolhimento = automate.calcularNota([1, 3, 5, 7, 9, 2], 2.08);
     var proposito = automate.calcularNota([7, 9, 5, 1], 3.12);
-
-    //calculo percentual
     var total =
       inovacao +
       autonomia +
@@ -82,10 +80,10 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
     Number((ordem = ((ordem / total) * 100).toFixed(2)));
     Number((acolhimento = ((acolhimento / total) * 100).toFixed(2)));
     Number((proposito = ((proposito / total) * 100).toFixed(2)));
-
     const data = {
       id,
       user,
+      web,
       inovacao,
       autonomia,
       competicao,
@@ -95,11 +93,11 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
       acolhimento,
       proposito,
     };
-    //respostas do fit cultural
     const resposta = {
       dados_do_usuario: {
         id: data.id,
         user: data.user,
+        web:data.web
       },
       fitcultural: {
         inovacao: data.inovacao,
@@ -118,7 +116,6 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
     } else {
       await automate.updateUsuario(admin, "Perfil Usuario", resposta);
     }
-
     res.json({
       message: `Usuario ${resposta.dados_do_usuario.user} registrado com sucesso!`,
     });
@@ -150,6 +147,7 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
     }
 
     var user = `empresa-${id}`;
+    var web = `www.${user}.com.br`
     var inovacao = automate.calcularNota([5, 4, 6, 1, 3, 5], 2.08);
     var autonomia = automate.calcularNota([7, 5, 4, 9, 1], 2.5);
     var competicao = automate.calcularNota([5, 4, 4, 9], 3.12);
@@ -181,6 +179,7 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
     const data = {
       id,
       user,
+      web,
       inovacao,
       autonomia,
       competicao,
@@ -195,6 +194,7 @@ app.post("/rh/perfil/empresa/fitcultural", async (req, res) => {
       dados_do_usuario: {
         id: data.id,
         user: data.user,
+        web:data.web,
       },
       fitcultural: {
         inovacao: data.inovacao,
@@ -306,7 +306,8 @@ app.get("/rh/perfil/usuario/:id", async (req, res) => {
  */
 
 app.get("/rh/perfil/empresa/:id", async (req, res) => {
-  var id  = req.params;
+  
+  var {id} = req.params
   id = id.slice(1);
   try {
     const snapshot = await admin.firestore().collection("Perfil Empresa").get();

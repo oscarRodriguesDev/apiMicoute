@@ -226,6 +226,7 @@ async function deletarUsuario(admin, rotulo, id) {
               dados_do_usuario: {
                 id: perfil.dados_do_usuario.id,
                 user: "disponible",
+                email:'nulo@email.com'
               },
               fitcultural: {
                 dados: "nenhum",
