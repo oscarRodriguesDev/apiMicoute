@@ -1,6 +1,13 @@
--implemntar a rota para deletar empresas - ok 
--apagar essas mensagens do console e criar mensagens relevantes ok
--comentarios de codigo para manutenlçoes de codigo criados - ok
--testar as rotas da api
-- na hora de salvar empresa e usuario o valor do id esta sendo o valor iterado, trabalhar para resolver isso amanha
-- rota get de empresa pelo id esta falhando
+- implemntar a rota para deletar empresas - ok 
+- apagar essas mensagens do console e criar mensagens relevantes ok
+- comentarios de codigo para manutenlçoes de codigo criados - ok
+- testar as rotas da api ok
+- na rota put hora de salvar empresa e usuario o valor do id esta sendo o valor iterado, trabalhar para resolver isso amanha ok
+- rota get de empresa pelo id esta falhando ok
+- criar rota para buscar pelo nome do usuario ok
+- criar rota para buscar pelo nome da empresa ok
+- salvar email do usuario ok
+- salvar site da empresa ok
+- criar rota put para alterar o email do usuario e da empresa
+- quando deletar o usuario preciso manter a chave ativa para adição do novo usuario
+para a empresa a mesma coisa
