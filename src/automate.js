@@ -18,11 +18,13 @@ function allRoutes() {
       get: {
         recuperar_usuarios_pessoa_fisica:
           "http://localhost:3001/rh/perfil/usuarios/",
-        recuperar_usuarios_empresa: "http://localhost:3001/rh/perfil/empresa/",
+        recuperar_usuarios_empresa: "http://localhost:3001/rh/perfil/empresas/",
         recuperar_usuario_pessoa_fisica_por_id:
           "http://localhost:3001/rh/perfil/usuarios/:id",
         recuperar_usuario_empresa_por_id:
           "http://localhost:3001/rh/perfil/empresa/:id",
+          recuperar_usuario_pelo_nome:
+          "http://localhost:3001/rh/perfil/usuarios/:username"
       },
       put: {
         alterar_nome_usuario:
@@ -30,14 +32,16 @@ function allRoutes() {
         alterar_nome_empresa:
           "http://localhost:3001/rh/perfil/usuario/edit-empresa/:id",
         alterar_fit_cultural_usuario:
-          "http://localhost:3001/rh/perfil/usuario/edit-fitcult-usuario/:id",
+          "http://localhost:3001/rh/perfil/usuario/edit-fitcult-usuario/:1",
         alterar_fit_cultural_empresa:
-          "http://localhost:3001/rh/perfil/usuario/edit-fitcult-empresa/:id",
+          "http://localhost:3001/rh/perfil/usuario/edit-fitcult-empresa/:1",
       },
 
       delete: {
-        deletar_usuario_ou_empresa:
+        deletar_usuario:
           "http://localhost:3001/rh/perfil/delete-user/:id",
+          deletar_empresa:
+          "http://localhost:3001/rh/perfil/delete-empresa/:id",
       },
     },
   };
@@ -77,7 +81,6 @@ function calcularNota(lista, peso) {
 
 async function definitionID(storageID, adminBd) {
   var id = 0;
-  console.log("entrando no definitionID");
   try {
     const snapshot = await adminBd.firestore().collection(storageID).get();
     if (snapshot.empty) {

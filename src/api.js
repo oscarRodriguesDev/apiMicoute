@@ -54,7 +54,7 @@ app.post("/rh/perfil/usuario/fitcultural", async (req, res) => {
       id = await automate.verificarLinesUser(admin, "Perfil Usuario");
     }
 
-    var user = `usuario-${id}`;
+    var user = `Cassio-${id}`;
     var inovacao = automate.calcularNota([5, 4, 6, 1, 3, 5], 2.08);
     var autonomia = automate.calcularNota([7, 5, 4, 9, 1], 2.5);
     var competicao = automate.calcularNota([5, 4, 4, 9], 3.12);
@@ -252,7 +252,7 @@ app.get("/rh/perfil/usuarios/", async (req, res) => {
  * essa rota get retorna todos as empresas com seus respectivos fit culturais salvos no banco de dados
  */
 
-app.get("/rh/perfil/empresa/", async (req, res) => {
+app.get("/rh/perfil/empresas/", async (req, res) => {
   try {
     const snapshot = await admin.firestore().collection("Perfil Empresa").get();
     let fitEmpresas = [];
@@ -271,7 +271,7 @@ app.get("/rh/perfil/empresa/", async (req, res) => {
 /**
  * Essa rota get retorna o perfil do usuario com id informado no banco de dados 
  */
-app.get("/rh/perfil/usuarios/:id", async (req, res) => {
+app.get("/rh/perfil/usuario/:id", async (req, res) => {
   var { id } = req.params;
   id = id.slice(1);
   try {
@@ -306,28 +306,87 @@ app.get("/rh/perfil/usuarios/:id", async (req, res) => {
  */
 
 app.get("/rh/perfil/empresa/:id", async (req, res) => {
-  var { id } = req.params;
+  var id  = req.params;
   id = id.slice(1);
   try {
     const snapshot = await admin.firestore().collection("Perfil Empresa").get();
-    let empresa = null; 
+    let perfil = null; // Inicializamos como null, para verificar se encontramos um usuário
     snapshot.forEach((doc) => {
-      if (doc.data().perfil_da_empresa.dados_da_empresa.id == id) {
-        empresa = doc.data();
+      if (doc.data().perfil_do_usuario.dados_do_usuario.id == id) {
+        perfil = doc.data();
       }
     });
 
-    if (empresa !== null) {
-      return res.send(empresa);
+    if (perfil !== null) {
+      // Se encontramos um usuário, enviamos a resposta com os dados do usuário
+      return res.send(perfil);
     } else {
-      return res.status(404).send({message: `usuário não foi encontrado!` });
+      // Se não encontramos um usuário, enviamos a resposta indicando que não foi encontrado
+      return res.status(404).send({message: `Empresa não foi encontrada no sistema!`});
     }
   } catch (err) {
+    console.log(err);
     return res
       .status(500)
-      .send({message: ` Erro ${err.message} ao buscar usuario!` });
+      .send({ message:`Ocorreu o erro ${err.message} ao tentar buscar empresa no sistema!`});
   }
 });
+
+
+
+/***
+ * Essa Rota busca usuarios pelo nome retorna uma lista com os usuarios que possuem aquele nome
+ */
+
+app.get("/rh/perfil/seach/name/:username", async (req, res) => {
+  var {username } = req.params;
+  username = username.slice(1)
+  username = username.slice(1).toLowerCase();
+  var nomes = []
+  var perfil = null
+ 
+    const snapshot = await admin.firestore().collection("Perfil Usuario").get();
+    snapshot.forEach((doc) => {
+      perfil = doc.data().perfil_do_usuario.dados_do_usuario.user.toLowerCase();
+      if(perfil.includes(username)){
+       perfil = doc.data().perfil_do_usuario.dados_do_usuario.user
+       nomes.push(perfil)
+     }
+     
+    });
+    res.send({Perfis:nomes})
+});
+
+
+
+
+
+/***
+ * Essa Rota busca empresas pelo nome retorna uma lista com as empresas que possuem o nome
+ */
+
+app.get("/rh/perfil/seach/empresa/:username", async (req, res) => {
+  var {username } = req.params;
+  username = username.slice(1)
+  username = username.slice(1).toLowerCase();
+  var nomes = []
+  var perfil = null
+ 
+    const snapshot = await admin.firestore().collection("Perfil Empresa").get();
+    snapshot.forEach((doc) => {
+      perfil = doc.data().perfil_do_usuario.dados_do_usuario.user.toLowerCase();
+     if(perfil.includes(username)){
+      perfil = doc.data().perfil_do_usuario.dados_do_usuario.user
+      nomes.push(perfil)
+     }
+     
+    });
+    res.send({Perfis:nomes})
+});
+
+
+
+
 
 
 
@@ -401,35 +460,14 @@ app.put("/rh/perfil/usuario/edit-empresa/:id", async (req, res) => {
  */
 
 app.put("/rh/perfil/usuario/edit-fitcult-usuario/:id", async (req, res) => {
-  //valores serão recebidos pela requisição
-  var inovacao = calcularNota([1, 3, 6, 1, 3, 5], 2.08);
-  var autonomia = calcularNota([7, 5, 3, 4, 1], 2.5);
-  var competicao = calcularNota([5, 2, 7, 9], 3.12);
-  var meritocracia = calcularNota([1, 1, 2, 5], 3.12);
-  var estabilidade = calcularNota([1, 3, 8, 17], 3.12);
-  var ordem = calcularNota([4, 5, 3, 9], 3.12);
-  var acolhimento = calcularNota([1, 3, 5, 7, 9, 2], 2.08);
-  var proposito = calcularNota([7, 1, 5, 8], 3.12);
-
-  //calculo percentual
-  var total =
-    inovacao +
-    autonomia +
-    competicao +
-    meritocracia +
-    estabilidade +
-    ordem +
-    acolhimento +
-    proposito;
-  Number((inovacao = ((inovacao / total) * 100).toFixed(2)));
-  Number((autonomia = ((autonomia / total) * 100).toFixed(2)));
-  Number((competicao = ((competicao / total) * 100).toFixed(2)));
-  Number((meritocracia = ((meritocracia / total) * 100).toFixed(2)));
-  Number((estabilidade = ((estabilidade / total) * 100).toFixed(2)));
-  Number((ordem = ((ordem / total) * 100).toFixed(2)));
-  Number((acolhimento = ((acolhimento / total) * 100).toFixed(2)));
-  Number((proposito = ((proposito / total) * 100).toFixed(2)));
-
+  var inovacao =1
+  var autonomia = 2
+  var competicao = 3
+  var meritocracia =4
+  var estabilidade = 5
+  var ordem =6
+  var acolhimento =7
+  var proposito =8
   const data = {
     inovacao,
     autonomia,
@@ -453,28 +491,22 @@ app.put("/rh/perfil/usuario/edit-fitcult-usuario/:id", async (req, res) => {
       proposito: data.proposito,
     },
   };
-  //valores acima vão ser recebidos no corpo da requisição
-
-  var { id } = req.params;
-  id = id.slice(1);
-  const snapshot = await admin.firestore().collection("Perfil Usuario").get();
-  if (snapshot.empty) {
-    return res.status(404).json({ error: `Usuario não foi encontrado, verifique o valor digitado e tente novamente! ` });
-  }
-  const empresa = snapshot.docs[id - 1];
-  try {
-    await empresa.ref.update({
-      "perfil_do_usuario.fitcultural": resposta.fitcultural,
-    });
-
-    return res
-      .status(200)
-      .json({ message: `Fit cultural foi alterado com sucesso!` });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: `Erro ao tentar atualizar o Fit Cultural` });
-  }
+  try{
+    var { id } = req.params;
+    id = id.slice(1);
+      const snapshot = await admin.firestore().collection("Perfil Usuario").get();
+      snapshot.forEach(async (doc) => {
+        const perfil = doc.data().perfil_do_usuario.dados_do_usuario;
+       if(perfil.id==id){
+        await doc.ref.update({
+          'perfil_do_usuario.fitcultural':resposta.fitcultural
+        })
+        res.send({message:`O Fit Cutlural do usuario ${perfil.user} foi alterado com sucesso`})
+       }
+      });
+    }catch(err){
+      res.send({message:`O erro ${err.message} ocorreu ao tentar atualizar o Fit Cultural do usuario`})
+    }
 });
 
 
@@ -486,35 +518,14 @@ app.put("/rh/perfil/usuario/edit-fitcult-usuario/:id", async (req, res) => {
  */
 
 app.put("/rh/perfil/usuario/edit-fitcult-empresa/:id", async (req, res) => {
-  //valores serão recebidos pela requisição
-  var inovacao = calcularNota([1, 3, 6, 1, 3, 5], 2.08);
-  var autonomia = calcularNota([7, 5, 3, 4, 1], 2.5);
-  var competicao = calcularNota([5, 2, 7, 9], 3.12);
-  var meritocracia = calcularNota([1, 1, 2, 5], 3.12);
-  var estabilidade = calcularNota([1, 3, 8, 17], 3.12);
-  var ordem = calcularNota([4, 5, 3, 9], 3.12);
-  var acolhimento = calcularNota([1, 3, 5, 7, 9, 2], 2.08);
-  var proposito = calcularNota([7, 1, 5, 8], 3.12);
-
-  //calculo percentual
-  var total =
-    inovacao +
-    autonomia +
-    competicao +
-    meritocracia +
-    estabilidade +
-    ordem +
-    acolhimento +
-    proposito;
-  Number((inovacao = ((inovacao / total) * 100).toFixed(2)));
-  Number((autonomia = ((autonomia / total) * 100).toFixed(2)));
-  Number((competicao = ((competicao / total) * 100).toFixed(2)));
-  Number((meritocracia = ((meritocracia / total) * 100).toFixed(2)));
-  Number((estabilidade = ((estabilidade / total) * 100).toFixed(2)));
-  Number((ordem = ((ordem / total) * 100).toFixed(2)));
-  Number((acolhimento = ((acolhimento / total) * 100).toFixed(2)));
-  Number((proposito = ((proposito / total) * 100).toFixed(2)));
-
+  var inovacao =1
+  var autonomia = 2
+  var competicao = 3
+  var meritocracia =4
+  var estabilidade = 5
+  var ordem =6
+  var acolhimento =7
+  var proposito =8
   const data = {
     inovacao,
     autonomia,
@@ -538,32 +549,22 @@ app.put("/rh/perfil/usuario/edit-fitcult-empresa/:id", async (req, res) => {
       proposito: data.proposito,
     },
   };
-  //valores acima vão ser recebidos no corpo da requisição
-
-  var { id } = req.params;
-  id = id.slice(1);
-
-  const snapshot = await admin.firestore().collection("Perfil Empresa").get();
-
-  if (snapshot.empty) {
-    return res.status(404).json({ message: `empresa não foi localizada no banco de dados!` });
-  }
-
-  const empresa = snapshot.docs[id - 1];
-
-  try {
-    await empresa.ref.update({
-      "perfil_do_usuario.fitcultural": resposta.fitcultural,
-    });
-
-    return res
-      .status(200)
-      .json({ message: `Fit cultural  salvo com sucesso!`});
-  } catch (error) {
-    return res
-      .status(500)
-      .json({message:`Erro ao tentar salvar fit cultural da empresa no banco de dados` });
-  }
+  try{
+    var { id } = req.params;
+    id = id.slice(1);
+      const snapshot = await admin.firestore().collection("Perfil Empresa").get();
+      snapshot.forEach(async (doc) => {
+        const perfil = doc.data().perfil_do_usuario.dados_do_usuario;
+       if(perfil.id==id){
+        await doc.ref.update({
+          'perfil_do_usuario.fitcultural':resposta.fitcultural
+        })
+        res.send({message:`O Fit Cutlural da empresa ${perfil.user} foi alterado com sucesso`})
+       }
+      });
+    }catch(err){
+      res.send({message:`O erro ${err.message} ocorreu ao tentar atualizar o Fit Cultural da empresa`})
+    }
 });
 
 
