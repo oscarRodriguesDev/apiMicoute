@@ -14,6 +14,10 @@ function allRoutes() {
         criar_usuario_pessoa_fisica:
           "http://localhost:3001/rh/perfil/usuario/fitcultural",
         criar_empresa: "http://localhost:3001/rh/perfil/empresa/fitcultural",
+        cadastro_de_usuario:'http://localhost:3001/rh/perfil/user/cadastrar/',
+        alterar_email_usuario:'http://localhost:3001/rh/perfil/usuario/edit-email/:id',
+        alterar_email_empresa:'http://localhost:3001/rh/perfil/empresa/edit-email/:id'
+
       },
       get: {
         recuperar_usuarios_pessoa_fisica:
@@ -250,6 +254,47 @@ async function deletarUsuario(admin, rotulo, id) {
 
 
 
+/**
+ * @param {*} admin variavel global do firebase
+ * @param {*} email email fornecido pelo usuario
+ * @param {*} senha senha fornecida pelo usuario
+ * 
+ * Essa função é usada para cadastrar um novo usuario no sistema
+ */
+
+async function createLogin(admin, email, senha){
+  try {
+    const userRecord = await admin.auth().createUser({
+      email: email,
+      password: senha,
+    });
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+async function loginUser(admin, email, senha) {
+  try {
+    const userRecord = await admin.auth().getUserByEmail(email);
+
+    // Verifica se o usuário está habilitado para login
+    if (!userRecord.disabled) {
+      // Autentica o usuário com e-mail e senha
+      const userCredential = await admin.auth().signInWithEmailAndPassword(email, senha);
+      const user = userCredential.user;
+      return user.uid;
+    } else {
+      throw new Error('Usuário desabilitado para login');
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+
+
 //modulos da função
 module.exports = {
   calcularNota,
@@ -259,4 +304,6 @@ module.exports = {
   updateUsuario,
   deletarUsuario,
   allRoutes,
+  createLogin,
+  loginUser
 };

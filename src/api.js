@@ -7,6 +7,7 @@ var serviceAccount = require("./services/credential.json");
 var admin = require("firebase-admin");
 var automate = require("./automate");
 
+
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -32,6 +33,26 @@ app.get("/verification", (req, res) => {
 
 app.get("/all-routes", (req, res) => {
   res.json(automate.allRoutes());
+});
+
+
+
+
+/**
+ * rota vai cadastrar o usuario e senha para cada usuario que realizar os testes no micoute
+ */
+app.post("/rh/perfil/user/cadastrar/", async (req, res) => {
+  //valores abaixo serão recebido no corpo da requisição
+  var user = "cassio@email.com";
+  var senha = "1234678";
+  try {
+    await automate.createLogin(admin, user, senha);
+    res.send({ message: "Novo usuario Cadastrado com sucesso" });
+  } catch (error) {
+    res.send({
+      message: `Ocorreu o erro ${error.message} ao tentar cadastrar usuario no sistema`,
+    });
+  }
 });
 
 
@@ -420,6 +441,56 @@ app.put("/rh/perfil/usuario/edit-user/:id", async (req, res) => {
 });
 
 
+/**rota para alterar o email do usuario */
+app.put("/rh/perfil/usuario/edit-email/:id", async (req, res) => {
+  try{
+    var { id } = req.params;
+    id = id.slice(1);
+    var novoEmail ='example@email.com'
+    if (!novoEmail) {
+      res.send({ message: "O valor de email não pode ser nulo!" });
+    } else {
+      const snapshot = await admin.firestore().collection("Perfil Usuario").get();
+      snapshot.forEach(async (doc) => {
+        const perfil = doc.data().perfil_do_usuario.dados_do_usuario;
+       if(perfil.id==id){
+        await doc.ref.update({
+          'perfil_do_usuario.dados_do_usuario.web':novoEmail
+        })
+        res.send({message:`O nome ${novoEmail} foi atribuido ao usuário no id ${id}`})
+       }
+      });
+    }}catch(err){
+      res.send({message:`O erro ${err.message} ocorreu ao tentar atualizar o nome de usuário`})
+    }
+});
+
+
+/**rota para alterar o email do usuario */
+app.put("/rh/perfil/empresa/edit-email/:id", async (req, res) => {
+  try{
+    var { id } = req.params;
+    id = id.slice(1);
+    var novoEmail =  'www.example.com.br'
+    if (!novoEmail) {
+      res.send({ message: "O valor de email não pode ser nulo!" });
+    } else {
+      const snapshot = await admin.firestore().collection("Perfil Empresa").get();
+      snapshot.forEach(async (doc) => {
+        const perfil = doc.data().perfil_do_usuario.dados_do_usuario;
+       if(perfil.id==id){
+        await doc.ref.update({
+          'perfil_do_usuario.dados_do_usuario.web':`${novoEmail}`
+        })
+        res.send({message:`O nome ${novoEmail} foi atribuido ao usuário no id ${id}`})
+       }
+      });
+    }}catch(err){
+      res.send({message:`O erro ${err.message} ocorreu ao tentar atualizar o nome de usuário`})
+    }
+});
+
+
 
 /**
  * Essa rota put altera o nome da empresa cujo o id foi informado na requisição
@@ -608,13 +679,6 @@ var { id } = req.params;
 });
 
 
-
-
-
-//rota para testes da api
-app.get("/teste", async (req, res) => {
-
-});
 
 
 

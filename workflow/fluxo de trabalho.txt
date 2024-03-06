@@ -8,7 +8,9 @@
 - criar rota para buscar pelo nome da empresa ok
 - salvar email do usuario ok
 - salvar site da empresa ok
-- criar rota put para alterar o email do usuario e da empresa
-- quando deletar o usuario preciso manter a chave ativa para adição do novo email
-para a empresa a mesma coisa
- - decidir por autenticação email e senha ou por telefone ou pelo google
+- criar rota put para alterar o email do usuario e da empresa ok
+- quando deletar o usuario preciso manter a chave ativa para adição do novo email para a empresa a mesma coisa ok
+- decidir por autenticação email e senha ou por telefone ou pelo google - decidido login por email e senha ok
+- criar pagina de login front-end
+
+
